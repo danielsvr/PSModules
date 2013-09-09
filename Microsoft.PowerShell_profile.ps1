@@ -1,2 +1,2 @@
-$profilepath = Split-Path $PROFILE -parent
-& {cd $profilepath; git pull}
+﻿$profilepath = Split-Path $PROFILE -parent
+powershell -NoProfile -Command "cd $profilepath; git pull"
