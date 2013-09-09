@@ -1,4 +1,10 @@
 ﻿function As-Admin {
+    if($args.Count -eq 0){
+        "Please specify a program to run!"
+        ""
+        break
+    }
+
     $prg = $args[0]
     $argList = New-Object 'System.Collections.Generic.List[System.Object]'
     
@@ -11,4 +17,6 @@
         start $prg -ArgumentList $argList -Verb runas
     }
 }
-Export-ModuleMember As-Admin
+Set-Alias aa As-Admin
+Export-ModuleMember -Function As-Admin 
+Export-ModuleMember -Alias aa
