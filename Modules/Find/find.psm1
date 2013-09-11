@@ -5,11 +5,11 @@ param(
   [string] $LookInto
 )
 
-if(-not $lookInto){
-    $lookInto = Split-Path $PROFILE -Parent
+if(-not $LookInto){
+    $LookInto = $env:USERPROFILE
 }
 
-get-childitem $lookInto -filter $name -recurse |
+get-childitem $LookInto -filter $name -recurse |
    %{ 
         $parent = $_.Parent
         if($parent -eq $null){
