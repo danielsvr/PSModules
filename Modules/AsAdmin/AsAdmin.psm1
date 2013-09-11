@@ -1,4 +1,12 @@
 ﻿function As-Admin {
+<#
+.SYNOPSIS 
+    A shorter version of Start-Process -verb runas
+.EXAMPLE
+    As-Admin notepad path\to\file.txt
+.PARAMETER args
+    A list of parameters where the first one is the program to run.
+#>
     if($args.Count -eq 0){
         "Please specify a program to run!"
         ""
@@ -18,5 +26,8 @@
     }
 }
 Set-Alias aa As-Admin
+Set-Alias sudo As-Admin
+
 Export-ModuleMember -Function As-Admin 
 Export-ModuleMember -Alias aa
+Export-ModuleMember -Alias sudo
