@@ -1,4 +1,4 @@
-﻿function As-Admin {
+﻿function Start-AsAdmin {
 <#
 .SYNOPSIS 
     A shorter version of Start-Process -verb runas
@@ -25,9 +25,11 @@
         start $prg -ArgumentList $argList -Verb runas
     }
 }
-Set-Alias aa As-Admin
-Set-Alias sudo As-Admin
+Set-Alias aa Start-AsAdmin
+Set-Alias saa Start-AsAdmin
+Set-Alias sudo Start-AsAdmin
 
-Export-ModuleMember -Function As-Admin 
+Export-ModuleMember -Function Start-AsAdmin
 Export-ModuleMember -Alias aa
+Export-ModuleMember -Alias saa
 Export-ModuleMember -Alias sudo

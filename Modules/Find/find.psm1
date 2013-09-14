@@ -1,4 +1,4 @@
-function Find(){
+function Find-Name(){
 
 param(
   [Parameter(Mandatory=$true, Position=0)][string] $Name,
@@ -22,5 +22,7 @@ get-childitem $LookInto -filter $name -recurse |
         new-object psobject -property  @{ Name = $name ; Path = $parent.FullName } 
     }
 }
+Set-Alias find Find-Name
 
-Export-ModuleMember -Function Find
+Export-ModuleMember -Function Find-Name
+Export-ModuleMember -Alias find
