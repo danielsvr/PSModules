@@ -9,7 +9,7 @@ if(-not $LookInto){
     $LookInto = $env:USERPROFILE
 }
 
-get-childitem $LookInto -filter $name -recurse |
+get-childitem $LookInto -filter $name -recurse -ErrorAction silentlycontinue |
    %{ 
         $parent = $_.Parent
         if($parent -eq $null){
