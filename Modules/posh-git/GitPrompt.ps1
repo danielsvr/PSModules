@@ -135,7 +135,7 @@ function Write-GitStatus($status) {
             if( -not $Global:PreviousWindowTitle ) {
                 $Global:PreviousWindowTitle = $Host.UI.RawUI.WindowTitle
             }
-            $repoName = Split-Path -Leaf (Split-Path $status.GitDir)
+            $repoName = Split-Path $status.GitDir
             $prefix = if ($s.EnableWindowTitle -is [string]) { $s.EnableWindowTitle } else { '' }
             $Host.UI.RawUI.WindowTitle = "$prefix$repoName [$($status.Branch)]"
         }
