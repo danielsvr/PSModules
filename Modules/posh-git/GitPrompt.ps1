@@ -136,8 +136,17 @@ function Write-GitStatus($status) {
                 $Global:PreviousWindowTitle = $Host.UI.RawUI.WindowTitle
             }
             $repoName = Split-Path $status.GitDir
+			
+			$currentUserIdentity = [Security.Principal.WindowsIdentity]::GetCurrent()
+			$currentUserPrincipal = New-Object Security.Principal.WindowsPrincipal $currentUserIdentity
+			$adminIndicator = ""
+			$administratorRole = [Security.Principal.WindowsBuiltinRole]::Administrator;
+			if($currentUserPrincipal.IsInRole($administratorRole)){
+				$adminIndicator = "Administrator: "
+			}
+
             $prefix = if ($s.EnableWindowTitle -is [string]) { $s.EnableWindowTitle } else { '' }
-            $Host.UI.RawUI.WindowTitle = "$prefix$repoName [$($status.Branch)]"
+            $Host.UI.RawUI.WindowTitle = "$adminIndicator$prefix$repoName [$($status.Branch)]"
         }
     } elseif ( $Global:PreviousWindowTitle ) {
         $Host.UI.RawUI.WindowTitle = $Global:PreviousWindowTitle

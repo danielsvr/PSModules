@@ -3,7 +3,7 @@
 if(-not(Get-Date (Get-Item $profilepath\.git\FETCH_HEAD).LastWriteTime -Uformat %D)-eq(Get-Date -UFormat %D)){
 	powershell -NoProfile -Command "cd $profilepath; git pull"
 }
-
+	
 $notepad  = "C:\Program Files (x86)\Notepad++\notepad++.exe"
 $devenv   = "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe"
 $devenv10 = "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe"
@@ -37,6 +37,7 @@ function global:prompt {
     Write-VcsStatus
 
     $global:LASTEXITCODE = $realLASTEXITCODE
+	Write-Host " "
 	return "$> "
 }
 
