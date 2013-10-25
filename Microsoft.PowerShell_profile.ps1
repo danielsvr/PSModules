@@ -28,6 +28,8 @@ function global:prompt {
 
     # Reset color, which can be messed up by Enable-GitColors
     $Host.UI.RawUI.ForegroundColor = $GitPromptSettings.DefaultForegroundColor
+	
+	Write-Host " "
 	Write-Host([Environment]::UserName + "@" + [Environment]::MachineName + " ") -nonewline -foregroundcolor "DarkGreen"
     Write-Host($pwd.ProviderPath) -nonewline -foregroundcolor "Gray"
 
@@ -35,8 +37,7 @@ function global:prompt {
     Write-VcsStatus
 
     $global:LASTEXITCODE = $realLASTEXITCODE
-	Write-Host " "
-    return "$> "
+	return "$> "
 }
 
 Enable-GitColors
