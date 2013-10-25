@@ -1,5 +1,9 @@
 ﻿$profilepath = Split-Path $PROFILE -parent
-powershell -NoProfile -Command "cd $profilepath; git pull"
+
+if(-not(Get-Date (Get-Item $profilepath\.git\FETCH_HEAD).LastWriteTime -Uformat %D)-eq(Get-Date -UFormat %D)){
+	powershell -NoProfile -Command "cd $profilepath; git pull"
+}
+
 $notepad  = "C:\Program Files (x86)\Notepad++\notepad++.exe"
 $devenv   = "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe"
 $devenv10 = "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe"
@@ -15,7 +19,6 @@ Set-Alias devenv10 "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\
 Set-Alias devenv11 "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe"
 Set-Alias msbuild  "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe"
 Set-Alias mstest   "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\mstest.exe"
-
 
 Import-Module posh-git
 
