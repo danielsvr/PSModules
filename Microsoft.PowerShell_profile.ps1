@@ -1,8 +1,15 @@
 ﻿$profilepath = Split-Path $PROFILE -parent
 
-if(-not(Get-Date (Get-Item $profilepath\.git\FETCH_HEAD).LastWriteTime -Uformat %D)-eq(Get-Date -UFormat %D)){
-	powershell -NoProfile -Command "cd $profilepath; git pull"
+function Update-Profile(){
+    $gitFetchFile = Get-Item $profilepath\.git\FETCH_HEAD
+    $lastGitFetch = Get-Date ($gitFetchFile).LastWriteTime -Uformat %D
+    $today = Get-Date -UFormat %D
+    if(-not($lastGitFetch -eq $today)){
+	    powershell -NoProfile -Command "cd $profilepath; git pull"
+    }
 }
+
+Update-Profile
 	
 $notepad  = "C:\Program Files (x86)\Notepad++\notepad++.exe"
 $devenv   = "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe"
@@ -45,4 +52,4 @@ Enable-GitColors
 
 Pop-Location
 
-Start-SshAgent -Quiet
+#Start-SshAgent -Quiet
