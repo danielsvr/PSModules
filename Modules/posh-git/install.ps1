@@ -7,7 +7,7 @@ if($PSVersionTable.PSVersion.Major -lt 2) {
 
 if(!(Test-Path $PROFILE)) {
     Write-Host "Creating PowerShell profile...`n$PROFILE"
-    New-Item $PROFILE -Force -Type File -ErrorAction Stop -WhatIf:$WhatIf > $null
+    (New-Item $PROFILE -Force -Type File -ErrorAction Stop -WhatIf:$WhatIf) | Out-Null
 }
 
 if(!(Get-Command git -ErrorAction SilentlyContinue)) {
