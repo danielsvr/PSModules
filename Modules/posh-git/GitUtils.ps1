@@ -46,19 +46,19 @@ function Get-GitBranch($gitDir = $(Get-GitDirectory), [Diagnostics.Stopwatch]$sw
             }
 
             $b = Invoke-NullCoalescing `
-                { dbg 'Trying symbolic-ref' $sw; (git symbolic-ref HEAD 2) | Out-Null } `
+                { dbg 'Trying symbolic-ref' $sw; git symbolic-ref HEAD 2>$null } `
                 { '({0})' -f (Invoke-NullCoalescing `
-                    { dbg 'Trying describe' $sw; (git describe --exact-match HEAD 2) | Out-Null } `
+                    { dbg 'Trying describe' $sw; git describe --exact-match HEAD 2>$null } `
                     {
                         dbg 'Falling back on parsing HEAD' $sw
                         $ref = $null
 
                         if (Test-Path $gitDir\HEAD) {
                             dbg 'Reading from .git\HEAD' $sw
-                            ($ref = Get-Content $gitDir\HEAD 2) | Out-Null
+                            $ref = Get-Content $gitDir\HEAD 2>$null
                         } else {
                             dbg 'Trying rev-parse' $sw
-                            ($ref = git rev-parse HEAD 2) | Out-Null
+                            $ref = git rev-parse HEAD 2>$null
                         }
 
                         if ($ref -match 'ref: (?<ref>.+)') {
@@ -73,9 +73,9 @@ function Get-GitBranch($gitDir = $(Get-GitDirectory), [Diagnostics.Stopwatch]$sw
         }
 
         dbg 'Inside git directory?' $sw
-        if ('true' -eq $((git rev-parse --is-inside-git-dir 2) | Out-Null)) {
+        if ('true' -eq $(git rev-parse --is-inside-git-dir 2>$null)) {
             dbg 'Inside git directory' $sw
-            if ('true' -eq $((git rev-parse --is-bare-repository 2) | Out-Null)) {
+            if ('true' -eq $(git rev-parse --is-bare-repository 2>$null)) {
                 $c = 'BARE:'
             } else {
                 $b = 'GIT_DIR!'
@@ -110,7 +110,7 @@ function Get-GitStatus($gitDir = (Get-GitDirectory)) {
 
         if($settings.EnableFileStatus -and !$(InDisabledRepository)) {
             dbg 'Getting status' $sw
-            ($status = git -c color.status=false status --short --branch 2)|Out-Null
+            $status = git -c color.status=false status --short --branch 2>$null
         } else {
             $status = @()
         }
@@ -227,7 +227,7 @@ function Set-TempEnv($key, $value) {
             Remove-Item $path
         }
     } else {
-        (New-Item $path -Force -ItemType File) | Out-Null
+        New-Item $path -Force -ItemType File > $null
         $value > $path
     }
 }
@@ -272,7 +272,7 @@ function Start-SshAgent([switch]$Quiet) {
 function Get-SshPath($File = 'id_rsa')
 {
     $home = Resolve-Path (Invoke-NullCoalescing $Env:HOME ~)
-    (Resolve-Path (Join-Path $home ".ssh\$File") -ErrorAction SilentlyContinue 2) | Out-Null
+    Resolve-Path (Join-Path $home ".ssh\$File") -ErrorAction SilentlyContinue 2> $null
 }
 
 # Add a key to the SSH agent
