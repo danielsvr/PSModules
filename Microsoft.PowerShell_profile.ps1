@@ -1,4 +1,7 @@
-﻿$profilepath = Split-Path $PROFILE -parent
+﻿([Console]::OutputEncoding = [System.Text.Encoding]::ASCII) | Out-NULL
+($OutputEncoding = [Console]::OutputEncoding) | Out-NULL
+
+$profilepath = Split-Path $PROFILE -parent
 
 function Update-Profile(){
     $gitFetchFile = Get-Item $profilepath\.git\FETCH_HEAD
@@ -53,3 +56,8 @@ Enable-GitColors
 Pop-Location
 
 # Start-SshAgent -Quiet
+
+# function to help binding exit keyword to an alias
+function ex{exit}
+Set-Alias :q ex
+Set-Alias ^Q ex
