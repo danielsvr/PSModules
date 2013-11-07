@@ -2,14 +2,19 @@
 # git or git-svn type repositories
 #
 
-# usings
-. .\cvs-utils.ps1
-. .\svn-utils.ps1
-. .\git-utils.ps1
+# using
+$ScriptPath = $MyInvocation.MyCommand.Path
+$ScriptDir  = Split-Path -Parent $ScriptPath
+. $ScriptDir\cvs-debug.ps1
+. $ScriptDir\cvs-utils.ps1
+. $ScriptDir\svn-utils.ps1
+. $ScriptDir\git-utils.ps1
+
+# end-using
 
 
 $global:CvsSettings = New-Object PSObject -Property @{
-  Debug              = $false,
+  Debug              = $true
   GitHiddenDirectory = ".git"
 }
 
@@ -32,12 +37,12 @@ param(
 )
 
 if(-not $path) {
-  $path = "."
+  $path = Get-Item "." -Force
 }
 
 $repoType = Get-RepositoryType $path
 
-Write-Debug "$repoType repository discoverd."
+Write-Dbg "$repoType repository discoverd."
 switch($repoType) {
   "svn"     { Update-SvnRepository $path }
   "git"     { Update-GitRepository $path }
@@ -50,23 +55,28 @@ switch($repoType) {
 function Get-RepositoryType{
 <#
 .SYNOPSIS
+    Gets the type of repository for the provided path
 .EXAMPLE
-.EXAMPLE
+    Get-RepositoryType c:\path\to\repo
 .PARAMETER path
+    Retuns one of the following strings "svn", "git"
+    or "git-svn"
 #>
 param(
   [Parameter(Mandatory=$true, Position=0)][string] $path
 )
 
-($isSvnRepository = Test-SvnRepository $path) | Out-Null
-if($isSvnRepository -eq $true)
+$isSvnRepository = Test-SvnRepository $path
+if($isSvnRepository -eq $true){
   return "svn"
+}
 
-($isGitRepository = Test-GitRepository $path) | Out-Null
+$isGitRepository = Test-GitRepository $path
 if($isGitRepository -eq $true){
-  ($isGitSvnRepository = Test-GitSvnRepository $path) | Out-Null
-  if($isGitSvnRepository -eq $true)
+  $isGitSvnRepository = Test-GitSvnRepository $path
+  if($isGitSvnRepository -eq $true){
     return "git-svn"
+  }
   return "git"
 }
 return "unknown"

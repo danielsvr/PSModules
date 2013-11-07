@@ -3,16 +3,13 @@
 
 
 
-function Debug-Csv(){
+function Write-Dbg(){
 
-param(
-  [Parameter][string] $message
-)
+$message = $args[0]
 
-$s = $global:CvstSettings
-
-if($s.Debug -eq $true){
-  Write-Debug $message
+if($Global:CvsSettings.Debug -eq $true){
+  $now = Get-Date -Format "yyyy-MM-dd HH:mm"
+  Write-Host "$now DEBUG: $message" -Foreground Yellow
 }
 
 }

@@ -13,6 +13,7 @@ param(
   [Parameter(Mandatory=$true, Position=0)][string] $path
 )
 
+Write-Dbg "Updating git repository $path"
 # code here...
 
 }
@@ -43,9 +44,19 @@ param(
   [Parameter(Mandatory=$true, Position=0)][string] $path
 )
 
-$gitPath = Get-RepositoryRootLocation $path { param($p) return Test-Path $p }
+$s = $global:CvsSettings
 
-# code here...
+$gitPath = Get-RepositoryRootLocation $path { 
+  # scriptblock param
+  param($p) 
+  $p = [System.IO.Path]::Combine($p, $s.GitHiddenDirectory)
+  return Test-Path $p 
+}
+
+if(-not ($gitPath -eq $null)){
+  return $true
+}
+
 return $false
 }
 
@@ -60,6 +71,16 @@ param(
   [Parameter(Mandatory=$true, Position=0)][string] $path
 )
 
-# code here...
+$s = $global:CvsSettings
+
+$gitPath = [System.IO.Path]::Combine($path, $s.GitHiddenDirectory)
+
+$svnRemotes = Get-Content $gitPath\config | sls '(\[svn\-remote)'
+Write-Dbg "$gitPath\config conteins svn-remotes `n$svnRemotes"
+
+if($svnRemotes) {
+  return $true
+}
+
 return $false
 }
