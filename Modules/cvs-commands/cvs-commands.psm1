@@ -15,7 +15,7 @@ $ScriptDir  = Split-Path -Parent $ScriptPath
 
 $global:CvsSettings = New-Object PSObject -Property @{
   # Enables/Disables debug messages
-  Debug              = $false
+  Debug              = $true 
 
   # git related and configurable information
   GitHiddenDirectory = ".git"
@@ -35,7 +35,6 @@ function Update-Repository {
     location or at provided path. It can be a svn, git or git-svn
     repository.
 .EXAMPLE
-    NOTE: not tested for git
     Update-Repository -Path c:\path\to\repo
 .EXAMPLE
     Update-Repository 

@@ -29,7 +29,15 @@ function Update-GitRepository{
   $gitTool = Get-GitTool
 
   Write-Dbg "executing '$gitTool pull'..."
-  & $gitTool pull
+  Write-Host "$gitTool pull"
+
+  # executing the command in a different scope
+  # this is due to the need of changing dirs
+  powershell -Command { 
+    param($path, $gitTool)
+    cd $path; 
+    & $gitTool pull
+  } -args @($path, $gitTool)
 }
 
 function Update-GitSvnRepository{
@@ -52,11 +60,25 @@ function Update-GitSvnRepository{
 
   Write-Dbg "executing '$gitTool svn fetch'..."
   Write-Host "$gitTool svn fetch"
-  & $gitTool svn fetch
 
+  # executing the command in a different scope
+  # this is due to the need of changing dirs
+  powershell -Command { 
+    param($path, $gitTool)
+    cd $path; 
+    & $gitTool svn fetch
+  } -args @($path, $gitTool)
+  
   Write-Dbg "executing '$gitTool svn rebase'..."
   Write-Host "$gitTool svn rebase"
-  & $gitTool svn rebase
+
+  # executing the command in a different scope
+  # this is due to the need of changing dirs
+  powershell -Command { 
+    param($path, $gitTool)
+    cd $path; 
+    & $gitTool svn rebase
+  } -args @($path, $gitTool)
 }
 
 function Test-GitSvnRepository{
