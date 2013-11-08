@@ -1,6 +1,7 @@
-# a groups of functions that ease the usage of svn, 
+# a group of functions that ease the usage of svn, 
 # git or git-svn type repositories
 #
+# NOTE: there will be others if I encounter :)
 
 # using
 $ScriptPath = $MyInvocation.MyCommand.Path
@@ -9,21 +10,32 @@ $ScriptDir  = Split-Path -Parent $ScriptPath
 . $ScriptDir\cvs-utils.ps1
 . $ScriptDir\svn-utils.ps1
 . $ScriptDir\git-utils.ps1
-
 # end-using
 
 
 $global:CvsSettings = New-Object PSObject -Property @{
-  Debug              = $true
+  # Enables/Disables debug messages
+  Debug              = $false
+
+  # git related and configurable information
   GitHiddenDirectory = ".git"
+  GitToolPath        = $null
+  GitTool            = "git"
+
+  # svn related and configurable information
+  SvnHiddenDirectory = ".svn"
+  SvnToolPath        = $null
+  SvnTool            = "svn"
 }
 
-function Update-Repository{
+function Update-Repository {
 <#
 .SYNOPSIS
-    Updates the source control repository that can be a svn, 
-    git or git-svn repository.
+    Updates the source control repository that resides at current 
+    location or at provided path. It can be a svn, git or git-svn
+    repository.
 .EXAMPLE
+    NOTE: not tested for git
     Update-Repository -Path c:\path\to\repo
 .EXAMPLE
     Update-Repository 
@@ -32,54 +44,76 @@ function Update-Repository{
     then te execution location is used to discover the 
     repository.
 #>
-param(
-  [Parameter(Mandatory=$false, Position=0)][string] $path
-)
+  param(
+    [Parameter(Mandatory=$false, Position=0)][string] $path
+  )
 
-if(-not $path) {
-  $path = Get-Item "." -Force
+  if(-not $path) {
+    $path = Get-Item "." -Force
+  }
+
+  $repoInfo = Get-RepositoryInfo $path
+
+  $repoType = $repoInfo.Type
+  $path = $repoInfo.RootDirectory
+
+  Write-Dbg "$repoType repository discoverd."
+  switch($repoType) {
+    "svn"     { Update-SvnRepository $path }
+    "git"     { Update-GitRepository $path }
+    "git-svn" { Update-GitSvnRepository $path }
+    default   { throw "unknown repositoty type" }
+  }
 }
 
-$repoType = Get-RepositoryType $path
-
-Write-Dbg "$repoType repository discoverd."
-switch($repoType) {
-  "svn"     { Update-SvnRepository $path }
-  "git"     { Update-GitRepository $path }
-  "git-svn" { Update-GitSvnRepository $path }
-  default   { throw "unknown repositoty type" }
-}
-
-}
-
-function Get-RepositoryType{
+function Get-RepositoryInfo {
 <#
 .SYNOPSIS
-    Gets the type of repository for the provided path
+    Gets the information of the repository that resides at the 
+    specified location
 .EXAMPLE
     Get-RepositoryType c:\path\to\repo
 .PARAMETER path
-    Retuns one of the following strings "svn", "git"
-    or "git-svn"
+    The path into the repository. It can be the root directory 
+    or one of its sub-directories
+.RETURNS
+    A PSObject the holds the type and root directory. The type
+    is described by a string that has one of the values: 
+    "svn", "git" or "git-svn"
 #>
-param(
-  [Parameter(Mandatory=$true, Position=0)][string] $path
-)
+  param(
+    [Parameter(Mandatory=$true, Position=0)][string] $path
+  )
 
-$isSvnRepository = Test-SvnRepository $path
-if($isSvnRepository -eq $true){
-  return "svn"
-}
-
-$isGitRepository = Test-GitRepository $path
-if($isGitRepository -eq $true){
-  $isGitSvnRepository = Test-GitSvnRepository $path
-  if($isGitSvnRepository -eq $true){
-    return "git-svn"
+  $result = New-Object PSObject -Property @{
+    Type          = "unknown"
+    RootDirectory = $null
   }
-  return "git"
-}
-return "unknown"
+
+  $svnRootDir = Get-SvnRepositoryRootLocation $path
+
+  if($svnRootDir){
+    $result.Type = "svn"
+    $result.RootDirectory = $svnRootDir
+    
+    return $result
+  }
+
+  $gitRootDir = Get-GitRepositoryRootLocation $path
+
+  if($gitRootDir){
+    $result.Type = "git"
+    $result.RootDirectory = $gitRootDir
+
+    $isGitSvnRepository = Test-GitSvnRepository $path
+    if($isGitSvnRepository -eq $true){
+      $result.Type = "git-svn"
+    }
+    
+    return $result
+  }
+  
+  return $result
 }
 
 Set-Alias update Update-Repository

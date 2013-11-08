@@ -1,34 +1,72 @@
-# a groups of functions for updating an svn repository
+# a group of functions that work with an svn repository.
 #
-
+# main functions:
+#   Update-SvnRepository
+#
+# utility functions:
+#   Get-SvnTool
+#   Get-SvnRepositoryRootLocation
+#
 
 function Update-SvnRepository{
 <#
 .SYNOPSIS
+    Updates the specified path using 'svn update' command
 .EXAMPLE
-.EXAMPLE
+    Update-SvnRepository c:\path\to\svn-repo
 .PARAMETER path
+    The path to be updated
 #>
-param(
-  [Parameter(Mandatory=$true, Position=0)][string] $path
-)
+  param(
+    [Parameter(Mandatory=$true, Position=0)][string] $path
+  )
 
-# code here...
+  Write-Dbg "Updating svn repository $path"
 
+  $svnTool = Get-SvnTool
+
+  Write-Dbg "executing '$svnTool update $path'..."
+
+  & $svnTool update $path
 }
 
-function Test-SvnRepository{
+function Get-SvnRepositoryRootLocation(){
+  param(
+    [Parameter(Mandatory=$true, Position=0)][string] $path
+  )
+
+  $s = $global:CvsSettings
+  $svnHiddenDir = $s.SvnHiddenDirectory
+
+  $svnPath = Get-RepositoryRootLocation $path { 
+    # scriptblock param
+    param($p) 
+    $p = [System.IO.Path]::Combine($p, $svnHiddenDir)
+    Write-Dbg "Testing existance of $svnHiddenDir"
+    return Test-Path $p 
+  }
+  return $svnPath
+}
+
+function Get-SvnTool{
 <#
 .SYNOPSIS
-.EXAMPLE
-.EXAMPLE
-.PARAMETER path
+  Tests if the git tool is installed
 #>
-param(
-  [Parameter(Mandatory=$true, Position=0)][string] $path
-)
 
-# code here...
-return $false
+  $s = $global:CvsSettings
+  $toolPath = $s.SvnToolPath
+  $svnTool = $s.SvnTool
+  if(-not ($toolPath -eq $null)){
+    $svnTool = "$toolPath\$svnTool"
+  }
 
+  Write-Dbg "Test if $svnTool is installed"
+  if(Get-Command $svnTool -ErrorAction SilentlyContinue){
+    Write-Dbg "$svnTool is installed"
+    return $svnTool
+  }
+
+  Write-Dbg "$svnTool is not installed"
+  throw "can't find $svnTool"
 }
