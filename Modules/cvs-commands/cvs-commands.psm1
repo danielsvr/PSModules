@@ -65,6 +65,31 @@ function Update-Repository {
   }
 }
 
+function Confirm-Changes{
+<#
+.SYNOPSIS
+.EXAMPLE
+.PARAMETER path
+#>
+  param([Parameter(Mandatory=$false)][string]$path)
+
+  if(-not $path) {
+    $path = Get-Item "." -Force
+  }
+
+  $repoInfo = Get-RepositoryInfo $path
+
+  $repoType = $repoInfo.Type
+  $path = $repoInfo.RootDirectory
+
+  Write-Dbg "$repoType repository discoverd."
+  switch -regex ($repoType) {
+    "^svn$"   { Confirm-SvnChanges $path }
+    "^git.*$" { Confirm-GitChanges $path }
+    default   { throw "unknown repositoty type" }
+  }
+}
+
 function Get-RepositoryInfo {
 <#
 .SYNOPSIS
@@ -116,6 +141,9 @@ function Get-RepositoryInfo {
 }
 
 Set-Alias update Update-Repository
+Set-Alias commit Confirm-Changes
 
 Export-ModuleMember -Function Update-Repository
 Export-ModuleMember -Alias update
+Export-ModuleMember -Function Confirm-Changes
+Export-ModuleMember -Alias commit

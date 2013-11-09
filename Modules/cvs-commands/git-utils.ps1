@@ -110,6 +110,33 @@ function Test-GitSvnRepository{
   return $false
 }
 
+function Confirm-GitChanges{
+<#
+.SYNOPSIS
+.EXAMPLE
+.PARAMETER
+#>
+  param(
+    [string]$gitPath
+  )
+  
+  Write-Dbg "Commiting git changes made in repository $path"
+
+  $gitTool = Get-GitTool
+
+  Write-Dbg "executing '$gitTool commit -a'..."
+  Write-Host "$gitTool commit -a"
+
+  # executing the command in a different scope
+  # this is due to the need of changing dirs
+  powershell -Command { 
+    param($path, $gitTool)
+    cd $path; 
+    & $gitTool commit -a
+  } -args @($gitPath, $gitTool)
+   
+}
+
 function Get-GitTool{
   $s = $global:CvsSettings
   $toolPath = $s.GitToolPath

@@ -18,10 +18,12 @@ function Get-RepositoryRootLocation(){
       Write-Dbg "Test pass"
       return $pathToCheck
     } else {
-      Write-Dbg "Test did't pass. Travers to parent."
+      Write-Dbg "Test did't pass."
       if($pathToCheck) {
+        Write-Dbg "Travers to parent."
         $pathToCheck = Split-Path $pathToCheck -Parent
       } else {
+        Write-Dbg "Stop travering."
         $pathToCheck = $null
       }
     }
