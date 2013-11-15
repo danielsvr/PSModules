@@ -29,6 +29,7 @@ function Update-GitRepository{
   $gitTool = Get-GitTool
 
   Write-Dbg "executing '$gitTool pull'..."
+  Write-Host "cd $path"
   Write-Host "$gitTool pull"
 
   # executing the command in a different scope
@@ -59,6 +60,7 @@ function Update-GitSvnRepository{
   $gitTool = Get-GitTool
 
   Write-Dbg "executing '$gitTool svn fetch'..."
+  Write-Host "cd $path"
   Write-Host "$gitTool svn fetch"
 
   # executing the command in a different scope
@@ -125,6 +127,7 @@ function Confirm-GitChanges{
   $gitTool = Get-GitTool
 
   Write-Dbg "executing '$gitTool commit -a'..."
+  Write-Host "cd $path"
   Write-Host "$gitTool commit -a"
 
   # executing the command in a different scope
