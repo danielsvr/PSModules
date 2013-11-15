@@ -30,6 +30,30 @@ function Update-SvnRepository{
   & $svnTool update $path
 }
 
+function Confirm-SvnChanges{
+  param([string]$svnPath)
+
+  Write-Dbg "Commiting changes to svn repository $path"
+
+  $svnTool = Get-SvnTool
+
+  Write-Dbg "executing '$vimTool ..."
+  
+  $message = Get-ConfirmationMessage $svnPath
+  if($message){
+    Write-Dbg "executing '$svnTool commit -m $message'..."
+    & $svnTool commit $svnPath -m $message
+  } else {
+    Write-Host "No message was provided. commit aborted..."
+  }
+}
+
+function Get-ConfirmationMessage{
+  param([string]$svnPath)
+
+  
+}
+
 function Get-SvnRepositoryRootLocation(){
   param(
     [Parameter(Mandatory=$true, Position=0)][string] $path
