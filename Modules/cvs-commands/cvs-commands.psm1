@@ -15,7 +15,7 @@ $ScriptDir  = Split-Path -Parent $ScriptPath
 
 $global:CvsSettings = New-Object PSObject -Property @{
   # Enables/Disables debug messages
-  Debug              = $true 
+  Debug              = $false
 
   # git related and configurable information
   GitHiddenDirectory = ".git"
