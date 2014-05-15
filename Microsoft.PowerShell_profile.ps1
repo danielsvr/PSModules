@@ -1,5 +1,5 @@
-﻿([Console]::OutputEncoding = [System.Text.Encoding]::ASCII) | Out-NULL
-($OutputEncoding = [Console]::OutputEncoding) | Out-NULL
+﻿# ([Console]::OutputEncoding = [System.Text.Encoding]::ASCII) | Out-NULL
+# ($OutputEncoding = [Console]::OutputEncoding) | Out-NULL
 
 $profilepath = Split-Path $PROFILE -parent
 
@@ -15,13 +15,16 @@ function Update-Profile(){
 Update-Profile
 	
 $notepad  = "C:\Program Files (x86)\Notepad++\notepad++.exe"
-$devenv   = "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe"
+$devenv   = "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.exe"
 $devenv10 = "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe"
 $devenv11 = "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe"
-$mstest   = "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\mstest.exe"
+$devenv12 = "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.exe"
+$mstest   = "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\mstest.exe"
 $mstest11 = "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\mstest.exe"
+$mstest12 = "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\mstest.exe"
 $msbuild  = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe"
 $msbuild4 = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe"
+$procex = "C:\Chocolatey\lib\procexp.15.13\tools\procexp.exe"
 
 Set-Alias notepad  "C:\Program Files (x86)\Notepad++\notepad++.exe"
 Set-Alias devenv   "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe"
@@ -29,6 +32,8 @@ Set-Alias devenv10 "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\
 Set-Alias devenv11 "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe"
 Set-Alias msbuild  "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe"
 Set-Alias mstest   "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\mstest.exe"
+Set-Alias procex   "C:\Chocolatey\lib\procexp.15.13\tools\procexp.exe"
+Set-Alias remote   "mstsc"
 
 Import-Module posh-git
 
