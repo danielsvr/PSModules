@@ -38,8 +38,11 @@ function Get-AvailableMachines {
 
 function Get-UserSelection {
 param(
-  [Parameter(Mandatory=$true, Position=0)]vailableOptions
+  [string[]]
+  $vailableOptions
 )
+
+  return $null
 }
 
 
