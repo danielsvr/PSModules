@@ -1,5 +1,11 @@
 if (Get-Module posh-git) { return }
 
+if($Global:PoshGitFlags -eq $null) {
+  $Global:PoshGitFlags = New-Object PSObject -Property @{
+    DisableWornings = $false
+  }
+}
+
 Push-Location $psScriptRoot
 .\CheckVersion.ps1 > $null
 
