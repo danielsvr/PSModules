@@ -69,7 +69,8 @@ Write-Host "Done"
 
 Write-Host "Creating vimfiles junction"
 if(Test-Path "$env:USERPROFILE\vimfiles") {
-  Remove-Item -Recurse -Force "$env:USERPROFILE\vimfiles"
+  $junction = Get-Item "$env:USERPROFILE\vimfiles"
+  $junction.Delete()
 }
 cmd /c mklink /J $env:USERPROFILE\vimfiles $profilepath\vimfiles
 Write-Host "Done"
