@@ -1,3 +1,4 @@
 CdmAutomation.config
 EncryptedPasswordObject.xml
 test.ps1
+vimfiles/.*
