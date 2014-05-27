@@ -17,6 +17,11 @@ function Update-Profile(){
 if($gitExists) {
   Update-Profile
   Import-Module posh-git
+} else {
+  $global:GitPromptSettings = New-Object PSObject -Property @{
+    DefaultForegroundColor    = $Host.UI.RawUI.ForegroundColor
+  }
+  $Global:GitMissing = $true
 }
 
 $notepad  = "C:\Program Files (x86)\Notepad++\notepad++.exe"
@@ -54,7 +59,9 @@ function global:prompt {
 
     $Host.UI.RawUI.ForegroundColor = $GitPromptSettings.DefaultForegroundColor
     
-    Write-VcsStatus
+    if(-not $Global:GitMissing) {
+      Write-VcsStatus
+    }
 
     $global:LASTEXITCODE = $realLASTEXITCODE
     Write-Host " "
