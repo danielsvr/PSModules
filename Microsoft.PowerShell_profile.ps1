@@ -6,6 +6,10 @@ $profilepath = Split-Path $PROFILE -parent
 $gitExists = -not ((Get-Command git -ErrorAction SilentlyContinue) -eq $null)
 
 function Update-Profile(){
+    $gitFetchFile = "$profilepath\.git\FETCH_HEAD"
+    if(-not Test-Path $gitFetchFile) {
+      return
+    }
     $gitFetchFile = Get-Item $profilepath\.git\FETCH_HEAD
     $lastGitFetch = Get-Date ($gitFetchFile).LastWriteTime -Uformat %D
     $today = Get-Date -UFormat %D
