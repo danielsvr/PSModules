@@ -3,6 +3,8 @@
 
 $profilepath = Split-Path $PROFILE -parent
 
+$gitExists = -not ((Get-Command git -ErrorAction SilentlyContinue) -eq $null)
+
 function Update-Profile(){
     $gitFetchFile = Get-Item $profilepath\.git\FETCH_HEAD
     $lastGitFetch = Get-Date ($gitFetchFile).LastWriteTime -Uformat %D
@@ -12,8 +14,11 @@ function Update-Profile(){
     }
 }
 
-Update-Profile
-	
+if($gitExists) {
+  Update-Profile
+  Import-Module posh-git
+}
+
 $notepad  = "C:\Program Files (x86)\Notepad++\notepad++.exe"
 $devenv   = "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.exe"
 $devenv10 = "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe"
@@ -35,7 +40,6 @@ Set-Alias mstest   "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\
 Set-Alias procex   "C:\Chocolatey\lib\procexp.15.13\tools\procexp.exe"
 Set-Alias remote   "mstsc"
 
-Import-Module posh-git
 
 # Set up a simple prompt, adding the git prompt parts inside git repos
 function global:prompt {
@@ -44,21 +48,28 @@ function global:prompt {
     # Reset color, which can be messed up by Enable-GitColors
     $Host.UI.RawUI.ForegroundColor = $GitPromptSettings.DefaultForegroundColor
 	
-	Write-Host " "
-	Write-Host([Environment]::UserName + "@" + [Environment]::MachineName + " ") -nonewline -foregroundcolor "DarkGreen"
+    Write-Host " "
+    Write-Host([Environment]::UserName + "@" + [Environment]::MachineName + " ") -nonewline -foregroundcolor "DarkGreen"
     Write-Host($pwd.ProviderPath) -nonewline -foregroundcolor "Gray"
 
     $Host.UI.RawUI.ForegroundColor = $GitPromptSettings.DefaultForegroundColor
+    
     Write-VcsStatus
 
     $global:LASTEXITCODE = $realLASTEXITCODE
-	Write-Host " "
-	return "$> "
+    Write-Host " "
+    return "$> "
 }
 
-Enable-GitColors
+if($gitExists) {
+  Enable-GitColors
+}
 
 Pop-Location
+
+# clean up
+rm function:Update-Profile
+Remove-Variable gitExists
 
 # Start-SshAgent -Quiet
 
