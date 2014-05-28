@@ -10,6 +10,12 @@
 #   Get-GitTool
 #
 
+#if($global:CvsSettings -eq $null) {
+#  $global:CvsSettings = New-Object PSObject
+#}
+
+#$global:CvsSettings | Add-Member NoteProperty `
+#-Name IsGitInstalled -Value (-not (Get-GitTool -eq $null))
 
 function Update-GitRepository{
 <#

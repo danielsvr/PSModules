@@ -1,22 +1,12 @@
 ﻿# ([Console]::OutputEncoding = [System.Text.Encoding]::ASCII) | Out-NULL
 # ($OutputEncoding = [Console]::OutputEncoding) | Out-NULL
 
+Import-Module cvs-commands
+Import-Module ProfileUtil
+
 $profilepath = Split-Path $PROFILE -parent
 
 $gitExists = -not ((Get-Command git -ErrorAction SilentlyContinue) -eq $null)
-
-function Update-Profile(){
-    $gitFetchFile = "$profilepath\.git\FETCH_HEAD"
-    if(-not Test-Path $gitFetchFile) {
-      return
-    }
-    $gitFetchFile = Get-Item $profilepath\.git\FETCH_HEAD
-    $lastGitFetch = Get-Date ($gitFetchFile).LastWriteTime -Uformat %D
-    $today = Get-Date -UFormat %D
-    if(-not($lastGitFetch -eq $today)){
-	    powershell -NoProfile -Command "cd $profilepath; git pull"
-    }
-}
 
 if($gitExists) {
   Update-Profile
@@ -79,7 +69,6 @@ if($gitExists) {
 Pop-Location
 
 # clean up
-rm function:Update-Profile
 Remove-Variable gitExists
 
 # Start-SshAgent -Quiet

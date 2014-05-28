@@ -12,20 +12,62 @@ $ScriptDir  = Split-Path -Parent $ScriptPath
 . $ScriptDir\git-utils.ps1
 # end-using
 
+if($global:CvsSettings -eq $null) {
+  $global:CvsSettings = New-Object PSObject
+}
 
-$global:CvsSettings = New-Object PSObject -Property @{
-  # Enables/Disables debug messages
-  Debug              = $false
+# Enables/Disables debug messages
+if($global:CvsSettings.PSObject.Properties.Match('Debug').Count -gt 0) {
+  $global:CvsSettings.Debug = $false
+} else {
+  $global:CvsSettings | Add-Member NoteProperty `
+  -Name Debug -Value $false
+}
 
-  # git related and configurable information
-  GitHiddenDirectory = ".git"
-  GitToolPath        = $null
-  GitTool            = "git"
+# git related and configurable information
+if($global:CvsSettings.PSObject.Properties.Match('GitHiddenDirectory').Count -gt 0) {
+  $global:CvsSettings.GitHiddenDirectory = ".git"
+} else {
+  $global:CvsSettings | Add-Member NoteProperty `
+  -Name GitHiddenDirectory -Value ".git"
+}
+if($global:CvsSettings.PSObject.Properties.Match('GitToolPath').Count -gt 0) {
+  $global:CvsSettings.GitToolPath = $null
+} else {
+  $global:CvsSettings | Add-Member NoteProperty `
+  -Name GitToolPath -Value $null
+}
+if($global:CvsSettings.PSObject.Properties.Match('GitTool').Count -gt 0) {
+  $global:CvsSettings.GitTool = "git"
+} else {
+  $global:CvsSettings | Add-Member NoteProperty `
+  -Name GitTool -Value "git"
+}
+if($global:CvsSettings.PSObject.Properties.Match('IsGitInstalled').Count -gt 0) {
+  $global:CvsSettings.IsGitInstalled = (-not ((Get-Command "git" -ErrorAction SilentlyContinue) -eq $null))
+} else {
+  $global:CvsSettings | Add-Member NoteProperty `
+  -Name IsGitInstalled -Value (-not ((Get-Command "git" -ErrorAction SilentlyContinue) -eq $null))
+}
 
-  # svn related and configurable information
-  SvnHiddenDirectory = ".svn"
-  SvnToolPath        = $null
-  SvnTool            = "svn"
+# svn related and configurable information
+if($global:CvsSettings.PSObject.Properties.Match('SvnHiddenDirectory').Count -gt 0) {
+  $global:CvsSettings.SvnHiddenDirectory = ".svn"
+} else {
+  $global:CvsSettings | Add-Member NoteProperty `
+  -Name SvnHiddenDirectory -Value ".svn"
+}
+if($global:CvsSettings.PSObject.Properties.Match('SvnToolPath').Count -gt 0) {
+  $global:CvsSettings.SvnToolPath = $null
+} else {
+  $global:CvsSettings | Add-Member NoteProperty `
+  -Name SvnToolPath -Value $null
+}
+if($global:CvsSettings.PSObject.Properties.Match('SvnTool').Count -gt 0) {
+  $global:CvsSettings.SvnTool = "svn"
+} else {
+  $global:CvsSettings | Add-Member NoteProperty `
+  -Name SvnTool -Value "svn"
 }
 
 function Update-Repository {
