@@ -3,6 +3,8 @@
 # Create a runcom.cmd (like bashrc in linux)
 # see http://superuser.com/questions/144347/is-there-windows-equivalent-of-the-bashrc-file-in-linux
 #
+# make cmd prompt nicer 
+# http://www.hanselman.com/blog/ABetterPROMPTForCMDEXEOrCoolPromptEnvironmentVariablesAndANiceTransparentMultiprompt.aspx
 
 
 [System.Reflection.Assembly]::`
