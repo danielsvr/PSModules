@@ -12,11 +12,6 @@
 
 $profilepath = Split-Path $PROFILE -parent
 
-if(Test-Path $profilepath) {
-  Write-Warning "$profilepath exists and it will be deleted"
-  Remove-Item -Recurse -Force $profilepath
-}
-
 Function DownloadZippedProfile {
     # temporary redirect
     # $profilepath = ("{0}_tmp" -f $profilepath)
@@ -38,7 +33,7 @@ Function DownloadZippedProfile {
     Write-Host "         to $tempProfileZip"
     (New-Object System.Net.WebClient).`
       DownloadFile("https://github.com/ogman/PSModules/archive/master.zip", `
-                  $tempProfileZip)
+                 $tempProfileZip)
     Write-Host "Done"
 
     Write-Host "Unziping $tempProfileZip"
@@ -57,8 +52,21 @@ Function DownloadZippedProfile {
 
 $gitExists = Get-Command git -ErrorAction SilentlyContinue
 if(-not ($gitExists -eq $null)) {
-  git clone https://github.com/ogman/PSModules.git $profilepath
+  if(Test-Path $profilepath\.git) {
+    Write-Host "profile is already a git repo. updating..."
+    git pull
+  } else {
+    if(Test-Path $profilepath) {
+      Write-Warning "$profilepath exists and it will be deleted"
+      Remove-Item -Recurse -Force $profilepath
+    }
+    git clone https://github.com/ogman/PSModules.git $profilepath
+  }
 } else {
+  if(Test-Path $profilepath) {
+    Write-Warning "$profilepath exists and it will be deleted"
+    Remove-Item -Recurse -Force $profilepath
+  }
   DownloadZippedProfile
 }
 
@@ -67,13 +75,20 @@ if(-not $env:Path.tolower().Contains("chocolatey")) {
   $env:PATH="{0};{1}\chocolatey\bin" -f $env:PATH,$env:SystemDrive
 }
 
-cinst vim
+if(-not ((Get-Command vim -ErrorAction SilentlyContinue) -eq $null)) {
+  cinst vim
+}
 
-Write-Host "Creating .vimrc hardlink"
+Write-Host "Creating .vimrc softlink"
 if(Test-Path "$env:USERPROFILE\.vimrc") {
   Remove-Item -Force "$env:USERPROFILE\.vimrc"
 }
-cmd /c mklink /H $env:USERPROFILE\.vimrc $profilepath\.vimrc | Out-Null
+
+start cmd `
+  -ArgumentList @("/c","mklink $env:USERPROFILE\.vimrc $profilepath\.vimrc") `
+  -WindowStyle Hidden `
+  -verb runas `
+  -ErrorAction SilentlyContinue | Out-Host
 Write-Host "Done"
 
 Write-Host "Creating vimfiles junction"
@@ -81,6 +96,34 @@ if(Test-Path "$env:USERPROFILE\vimfiles") {
   $junction = Get-Item "$env:USERPROFILE\vimfiles"
   $junction.Delete()
 }
+
 cmd /c mklink /J $env:USERPROFILE\vimfiles $profilepath\vimfiles
+
 Write-Host "Done"
+Write-Host " "
+
+#setup cmd.exe
+$runcomcontent = @'
+@echo off
+SET PROMPT=%USERNAME%@%COMPUTERNAME%$S$P$_$$$G$S
+
+IF EXIST %USERPROFILE%\runcom.cmd (
+  %USERPROFILE%\runcom.cmd
+)
+'@
+
+$asAdminCommand = @"
+Set-Location 'HKLM:\Software\Microsoft\Command Processor'; 
+Set-ItemProperty . 'AutoRun' 'C:\Windows\runcom.cmd';
+'$runcomcontent' | Out-File C:\Windows\runcom.cmd -Encoding ASCII
+"@
+
+start powershell `
+  -WindowStyle Hidden `
+  -verb runas `
+  -ArgumentList "-noexit","-Command",$asAdminCommand `
+  | Out-Host
+
+Write-Host "Restart your shells."
+Write-Host " "
 
