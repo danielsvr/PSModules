@@ -1,3 +1,10 @@
+# TODO
+#
+# Create a runcom.cmd (like bashrc in linux)
+# see http://superuser.com/questions/144347/is-there-windows-equivalent-of-the-bashrc-file-in-linux
+#
+
+
 [System.Reflection.Assembly]::`
   LoadWithPartialName('System.IO.Compression.FileSystem') | Out-Null
 
