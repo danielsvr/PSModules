@@ -121,7 +121,7 @@ Set-ItemProperty . 'AutoRun' 'C:\Windows\runcom.cmd';
 start powershell `
   -WindowStyle Hidden `
   -verb runas `
-  -ArgumentList "-noexit","-Command",$asAdminCommand `
+  -ArgumentList "-Command",$asAdminCommand `
   | Out-Host
 
 Write-Host "Restart your shells."
