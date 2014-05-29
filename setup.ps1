@@ -105,12 +105,21 @@ Write-Host " "
 #setup cmd.exe
 $runcomcontent = @'
 @echo off
-SET PROMPT=%USERNAME%@%COMPUTERNAME%$S$P$_$$$G$S
+SET PROMPT=$_%USERNAME%@%COMPUTERNAME%$S$P$_$$$G$S
 
 IF EXIST %USERPROFILE%\runcom.cmd (
   %USERPROFILE%\runcom.cmd
 )
 '@
+
+@'
+@echo off
+
+doskey ls=dir $*
+doskey :q=exit
+doskey clear=cls
+
+'@ | Out-File $env:USERPROFILE\runcom.cmd -Encoding ASCII
 
 $asAdminCommand = @"
 Set-Location 'HKLM:\Software\Microsoft\Command Processor'; 
