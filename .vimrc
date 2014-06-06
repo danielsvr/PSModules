@@ -95,4 +95,6 @@ set shiftwidth=2
 
 set hidden
 
+" autocmd vimenter * NERDTree
+" autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 " try omnisharp ... it seems nice

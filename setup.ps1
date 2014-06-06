@@ -5,6 +5,9 @@
 #
 # make cmd prompt nicer 
 # http://www.hanselman.com/blog/ABetterPROMPTForCMDEXEOrCoolPromptEnvironmentVariablesAndANiceTransparentMultiprompt.aspx
+#
+# change background function that changes wallpaper and login screen
+# http://www.techspot.com/guides/224-change-logon-screen-windows7/
 
 
 [System.Reflection.Assembly]::`

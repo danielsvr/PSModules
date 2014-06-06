@@ -22,7 +22,14 @@ param(
     $machine = (Get-AvailableMachines | Get-UserSelection)
   }
 
-  mstsc /v:$machine
+  if($machine -eq $null) {
+    # mstsc
+    return
+  }
+
+  Backup-Input $machine
+
+  # mstsc /v:$machine
 }
 
 function Assert-Mstsc {
@@ -58,7 +65,25 @@ function Get-AvailableMachines {
   
   $machines = $content["machines"]
   Write-Verbose "Machines found"
-  $machines | %{ Write-Verbose "$_.Key = $_.Value" }
+
+  $hashtableType = @{}.GetType()
+
+  $machines | %{ 
+    Write-Verbose "is item hashtable? "
+    if($_.GetType() -eq $hashtableType) {
+      Write-Verbose "yes"
+      $_ | %{
+        $mKey = $_.Key
+        $mValue = $_.Value
+        Write-Verbose "$mKey = $mValue"
+      }
+    } else {
+      Write-Verbose "no"
+      $mKey = $_.Key
+      $mValue = $_.Value
+      Write-Verbose "$mKey = $mValue" 
+    }
+  }
   Write-Verbose "=============="
   $aliases = $content["aliases"]
   Write-Verbose "Aliases found"
@@ -102,6 +127,60 @@ param(
                   } | Select IP -First 1)
 
   return $selectedIp
+}
+
+function Backup-Input{
+param (
+  $machine
+)
+  $existingKey = Get-AvailableMachines | ? { $_.ID -eq $machine } | select -First 1
+  if($existingKey) {
+    return
+  }
+
+  if (!(Get-Command Out-IniFile -TotalCount 1 -ErrorAction SilentlyContinue)) {
+    Write-Verbose "W: Out-IniFile not found. Connections history will not be available"
+    return
+  }
+  
+  $dataDirectory = "$profilepath\.data"
+  $dataDirectoryExists = Test-Path $dataDirectory
+  
+  if(-not $dataDirectoryExists) {    
+    Write-Verbose "I: '$dataDirectory' does not exists"
+    md $dataDirectory
+  }
+
+  $filepath = "$profilepath\.data\Connect-RemoteDesktop.ini"
+  $fileExists = Test-Path $filepath
+  
+  if(-not $fileExists) {    
+    Write-Verbose "I: '$filepath' does not exists"
+@"
+[machines]
+
+[aliases]
+
+"@ | Out-File $filepath -Encoding ASCII
+  }
+
+  $ipPattern = "\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b"
+  $entry = @{}
+  switch -regex ($machine) {
+    $ipPattern {
+      $entry = @{ "$machine"="$machine" }
+    }
+    default {
+      $ip = ping $machine -4 -a -n 1 |`
+        sls -Pattern $ipPattern |`
+        select Matches -First 1 |`
+        %{ $_.Matches } | %{ $_.Value }
+
+      $entry = @{ "$machine"="$ip" }
+    }
+  }
+
+  Out-IniFile -InputObject @{ "machines"=$entry } -File $filepath -Append -Encoding ASCII
 }
 
 
