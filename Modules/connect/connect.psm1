@@ -19,7 +19,8 @@ param(
   
   if($machine -eq $null) {
     Write-Verbose "I: Getting available machines from history"
-    $machine = (Get-AvailableMachines | Get-UserSelection)
+    $machines = Get-AvailableMachines 
+    $machine = Get-UserSelection $machines
   }
 
   if($machine -eq $null) {
@@ -66,40 +67,38 @@ function Get-AvailableMachines {
   $machines = $content["machines"]
   Write-Verbose "Machines found"
 
-  $hashtableType = @{}.GetType()
-
-  $machines | %{ 
-    Write-Verbose "is item hashtable? "
-    if($_.GetType() -eq $hashtableType) {
-      Write-Verbose "yes"
-      $_ | %{
-        $mKey = $_.Key
-        $mValue = $_.Value
-        Write-Verbose "$mKey = $mValue"
-      }
-    } else {
-      Write-Verbose "no"
-      $mKey = $_.Key
-      $mValue = $_.Value
-      Write-Verbose "$mKey = $mValue" 
+  if($machines.Count -gt 0) {
+    $machines.Keys | %{ 
+        $key = $_
+        $val = $machines["$_"]
+        Write-Verbose "$key = $val" 
     }
   }
+
   Write-Verbose "=============="
   $aliases = $content["aliases"]
   Write-Verbose "Aliases found"
-  $aliases | %{ Write-Verbose "$_.Key = $_.Value" }
-  Write-Verbose "=============="
-
-  $machines | % {
-    $machine = New-Object PSObject
-    $machine | Add-Member NoteProperty -Name ID -Value $_.Key
-    $machine | Add-Member NoteProperty -Name IP -Value $_.Value
-    $machine | Add-Member NoteProperty -Name Alias -Value $aliases[$_.Key]
-   
-    $availableMachines += $machine
+  
+  if($aliases.Count -gt 0) {  
+    $aliases.Keys | %{ 
+        $key = $_
+        $val = $aliases["$_"]
+        Write-Verbose "$key = $val" 
+    }
   }
 
-  
+  Write-Verbose "=============="
+  if($machines.Count -gt 0) {
+    $machines.Keys | % {
+      $machine = New-Object PSObject
+      $machine | Add-Member NoteProperty -Name ID -Value $_
+      $machine | Add-Member NoteProperty -Name IP -Value $machines[$_]
+      if (($aliases.Count -gt 0) -and ($aliases.ContainsKey($_.Key))) {
+        $machine | Add-Member NoteProperty -Name Alias -Value $aliases[$_.Key]
+      }
+      $availableMachines += $machine
+    }
+  }
   return $availableMachines
 }
 
@@ -109,16 +108,20 @@ param(
 )
   $zero = 0
 
-  if($availableOptions -le $zero) {
+  if($availableOptions.Count -le $zero) {
     return $null
   }
 
-
   Write-Host "Connections History:"
   $availableOptions | %{
-    [Console]::WriteLine("{0:5} -> {1}({2})", $_.ID, $_.IP, $_.Alias)
+    # Write-Host $_
+    $alias = $_.Alias
+    if(-not ($alias -eq $null)) {
+      $alias = "($alias)"
+    }
+    [Console]::WriteLine("{0:5} -> {1}{2}", $_.ID, $_.IP, $alias)
   }
-  $selection = Read-Host "Select: "
+  $selection = Read-Host "Select"
 
   $selectedIp = ($availableOptions | ? { `
                     $_.IP -eq $selection -or `
@@ -133,16 +136,12 @@ function Backup-Input{
 param (
   $machine
 )
-  $existingKey = Get-AvailableMachines | ? { $_.ID -eq $machine } | select -First 1
-  if($existingKey) {
+  if (!((Get-Command Out-IniFile -TotalCount 1 -ErrorAction SilentlyContinue) `
+      -and (Get-Command Get-IniContent -TotalCount 1 -ErrorAction SilentlyContinue))) {
+    Write-Verbose "W: Out-IniFile or Get-IniContent not found. Connections history will not be available"
     return
   }
 
-  if (!(Get-Command Out-IniFile -TotalCount 1 -ErrorAction SilentlyContinue)) {
-    Write-Verbose "W: Out-IniFile not found. Connections history will not be available"
-    return
-  }
-  
   $dataDirectory = "$profilepath\.data"
   $dataDirectoryExists = Test-Path $dataDirectory
   
@@ -164,6 +163,15 @@ param (
 "@ | Out-File $filepath -Encoding ASCII
   }
 
+  $content = Get-IniContent $filepath
+
+  $existingKey = $content["machines"].Keys | ? { $_ -eq $machine} | select -First 1
+  
+  if(-not ($existingKey -eq $null)) {
+    Write-Verbose "I: key exists $machine"
+    return
+  }
+
   $ipPattern = "\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b"
   $entry = @{}
   switch -regex ($machine) {
@@ -179,8 +187,12 @@ param (
       $entry = @{ "$machine"="$ip" }
     }
   }
+  $content["machines"]["$machine"] = $entry["$machine"]
 
-  Out-IniFile -InputObject @{ "machines"=$entry } -File $filepath -Append -Encoding ASCII
+  rm $filepath -Force
+  if(-not (Test-Path $filepath)) {
+    Out-IniFile -InputObject $content -File $filepath -Encoding ASCII
+  }
 }
 
 
