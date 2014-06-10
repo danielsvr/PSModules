@@ -32,4 +32,19 @@ function Update-Profile(){
   }
 }
 
-Export-ModuleMember -Functio Update-Profile
+function Restore-Profile {
+    @(
+        $Profile.AllUsersAllHosts,
+        $Profile.AllUsersCurrentHost,
+        $Profile.CurrentUserAllHosts,
+        $Profile.CurrentUserCurrentHost
+    ) | % {
+        if(Test-Path $_){
+            Write-Verbose "Running $_"
+            . $_
+        }
+    }    
+}
+
+Export-ModuleMember -Function Restore-Profile
+Export-ModuleMember -Function Update-Profile
