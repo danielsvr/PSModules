@@ -10,6 +10,7 @@ $gitExists = -not ((Get-Command git -ErrorAction SilentlyContinue) -eq $null)
 
 if($gitExists) {
   Update-Profile
+  $Global:VcsPromptStatuses = @()
   Import-Module posh-git
 } else {
   $global:GitPromptSettings = New-Object PSObject -Property @{

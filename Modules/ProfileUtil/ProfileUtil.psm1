@@ -53,6 +53,8 @@ function Restore-AllModules {
     Remove-Module $_
     Import-Module $_.Name
   }
+
+  # Remove-Variable VcsPromptStatuses
   Restore-Profile
 }
 
