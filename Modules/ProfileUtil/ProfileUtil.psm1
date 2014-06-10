@@ -46,5 +46,22 @@ function Restore-Profile {
     }    
 }
 
+function Restore-AllModules {
+  Get-Module | ?{ 
+    $_.ModuleBase.StartsWith($profilepath) 
+  } | %{
+    Remove-Module $_
+    Import-Module $_.Name
+  }
+  Restore-Profile
+}
+
+Set-Alias rc                  Restore-AllModules
+Set-Alias rstcon              Restore-AllModules
+
+Export-ModuleMember -Function Restore-AllModules
 Export-ModuleMember -Function Restore-Profile
 Export-ModuleMember -Function Update-Profile
+Export-ModuleMember -Alias    rc
+Export-ModuleMember -Alias    rstcon
+
