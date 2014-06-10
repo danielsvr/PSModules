@@ -113,14 +113,35 @@ param(
   }
 
   Write-Host "Connections History:"
+  $i = 0
+
+  Write-Verbose "Available options count: $($availableOptions.Count)"
+
   $availableOptions | %{
     # Write-Host $_
     $alias = $_.Alias
     if(-not ($alias -eq $null)) {
       $alias = "($alias)"
+    } else {
+      $alias = " "
     }
-    [Console]::WriteLine("{0:5} -> {1}{2}", $_.ID, $_.IP, $alias)
+    if($i -eq $null) {
+      Write-Verbose '$i is null'
+    }
+    if($_.ID -eq $null) {
+      Write-Verbose '$_.ID is null'
+    }
+    if($_.IP -eq $null) {
+      Write-Verbose '$_.IP is null'
+    }
+    if($alias -eq $null) {
+      Write-Verbose '$alias is null'
+    }
+
+    $i = $i + 1
+    Write-Host $("{0,3} -> {1} - {2}{3}" -f $i, $_.ID, $_.IP, $alias)
   }
+  
   $selection = Read-Host "Select"
 
   $selectedIp = ($availableOptions | ? { `
