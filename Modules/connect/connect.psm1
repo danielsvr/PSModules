@@ -25,7 +25,7 @@ param(
     $alias = $as
   }
 
-  if(-not ($alias -eq $null)) {
+  if((-not ($alias -eq $null)) -and ($machine -eq $null)) {
     Write-Verbose "Get machine by alias '$alias'"
     $machines = Get-AvailableMachines
     $machine = ($machines | ?{ $_.Alias -eq $alias } | Select -First 1).ID

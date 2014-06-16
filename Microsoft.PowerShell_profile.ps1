@@ -29,7 +29,8 @@ $mstest11 = "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\mst
 $mstest12 = "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\mstest.exe"
 $msbuild  = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe"
 $msbuild4 = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe"
-$procex = "C:\Chocolatey\lib\procexp.15.13\tools\procexp.exe"
+$procex   = "C:\Chocolatey\lib\procexp.15.13\tools\procexp.exe"
+$hosts    = "C:\Windows\System32\drivers\etc\hosts"
 
 # Set up a simple prompt, adding the git prompt parts inside git repos
 function global:prompt {
