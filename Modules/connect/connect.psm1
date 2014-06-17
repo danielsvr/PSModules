@@ -19,16 +19,34 @@ param(
   $as
 )
   Assert-Mstsc
-  
+  Write-Verbose "machine is $machine and alias is $as"
+
+
   $alias = $machine
   if(-not ($as -eq $null)) {
+    Write-Verbose "as is not null"
+    Write-Verbose "setting alias to $as"
     $alias = $as
   }
 
-  if((-not ($alias -eq $null)) -and ($machine -eq $null)) {
+  
+  if(-not ($alias -eq $null)) {
     Write-Verbose "Get machine by alias '$alias'"
     $machines = Get-AvailableMachines
-    $machine = ($machines | ?{ $_.Alias -eq $alias } | Select -First 1).ID
+    $foundMachine = ($machines | ?{ $_.Alias -eq $alias } | Select -First 1).ID
+
+    if(-not $foundMachine) { 
+      Write-Verbose "No machine found by alias $alias"
+    }
+
+    if($foundMachine) {
+      Write-Host "Found machine $foundMachine for alias $alias"
+      if((-not ($alias -eq $machine)) -and (-not ($machine -eq $foundMachine))) {
+        Write-Host "Conflict on alias $alias (already used for $foundMachine)"
+        return
+      }
+      $machine = $foundMachine
+    }
   }
 
   if($machine -eq $null) {
