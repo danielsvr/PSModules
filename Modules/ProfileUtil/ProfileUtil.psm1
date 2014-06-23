@@ -1,3 +1,5 @@
+$profilepath = Split-Path $PROFILE -parent
+
 function Update-Profile(){
 <#
 .SYNOPSIS 
@@ -5,30 +7,54 @@ function Update-Profile(){
 .EXAMPLE
     Update-Profile
 #>
-  $cvsModule= Get-Module cvs-commands
-  if($cvsModule -eq $null) {
-    Import-Module cvs-commands -ErrorAction SilentlyContinue
-    $cvsModule= Get-Module cvs-commands
-    if($cvsModule -eq $null) {
+  Write-Verbose "Updating PSProfile for the current user $($env:USERNAME)"
+  
+  $vcsModule= Get-Module vcs-commands
+  if($vcsModule -eq $null) {
+    Write-Verbose "Vcs-commands module is not loaded, and trying to load it now."
+    Import-Module vcs-commands -ErrorAction SilentlyContinue
+    $vcsModule= Get-Module vcs-commands
+    if($vcsModule -eq $null) {
+      "Vcs-commands can't be loaded. Update aborted."
       return
-    }
+    }    
   }
 
-  if(-not $global:CvsSettings.IsGitInstalled) {
+  Write-Verbose "Vcs-commands module is loaded"
+  
+  if(-not $global:VcsSettings.IsGitInstalled) {
+    "Git is not installed. Update aborted."
     return
+  } else {
+    Write-Verbose "Git is installed"
   }
 
-  $profilepath = Split-Path $PROFILE -parent
+  $gitDir = $global:VcsSettings.GitHiddenDirectory
+  $gitDir = "$profilepath\$gitDir"
+  if(-not (Test-Path $gitDir)) {
+    "Can't find $gitDir. Update aborted."
+    return
+  } else {
+    Write-Verbose "$gitDir found."
+  }
 
   $gitFetchFile = "$profilepath\.git\FETCH_HEAD"
-  if(-not (Test-Path $gitFetchFile)) {
-    return
+  $lastGitFetch = Get-Date -Year 1900 -Month 1 -Day 1
+  if(Test-Path $gitFetchFile) {
+    Write-Verbose "$gitFetchFile found."
+    $gitFetchFile = Get-Item $profilepath\.git\FETCH_HEAD
+    $lastGitFetch = Get-Date ($gitFetchFile).LastWriteTime -Uformat %D
+    Write-Verbose "Last git fetch was: $lastGitFetch"
+  } else {
+    Write-Verbose "$gitFetchFile is not found. An update will be forced."
   }
-  $gitFetchFile = Get-Item $profilepath\.git\FETCH_HEAD
-  $lastGitFetch = Get-Date ($gitFetchFile).LastWriteTime -Uformat %D
+  
   $today = Get-Date -UFormat %D
   if(-not($lastGitFetch -eq $today)){
+    Write-Verbose "Updating profile"
 	  powershell -NoProfile -Command "cd $profilepath; git pull"
+  } else {
+    Write-Verbose "No update needed."
   }
 }
 
@@ -66,4 +92,5 @@ Export-ModuleMember -Function Restore-Profile
 Export-ModuleMember -Function Update-Profile
 Export-ModuleMember -Alias    rc
 Export-ModuleMember -Alias    rstcon
+Export-ModuleMember -Variable profilepath
 
