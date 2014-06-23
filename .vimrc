@@ -9,12 +9,6 @@ filetype on
 filetype indent on
 filetype plugin on
 
-if has("gui_running")
-  " GUI is running or is about to start.
-  " Maximize gvim window.
-  set guifont=Lucida\ Console:h11
-  au GUIEnter * simalt ~x
-endif
 
 
 syntax enable
@@ -79,7 +73,8 @@ set nocursorline
 set nowrap
 set linebreak
 "set background=dark
-colo pablo
+"hi Normal ctermbg=black
+colo ron
 "hi PreProc ctermfg=white
 "hi String ctermfg=cyan
 
@@ -130,4 +125,12 @@ function ToggleWrap()
   endif
 endfunction
 noremap <silent> <Leader>w :call ToggleWrap()<CR>
+
+if has("gui_running")
+  " GUI is running or is about to start.
+  " Maximize gvim window.
+  set guifont=Lucida\ Console:h11
+  au GUIEnter * simalt ~x
+  colo desert
+endif
 
