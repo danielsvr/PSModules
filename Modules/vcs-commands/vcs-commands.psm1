@@ -197,11 +197,11 @@ function Register-PoshGit {
 }
 
 function Get-VcsStatus {
-  $poshUtilModule= Get-Module posh-util
-  if($poshUtilModule -eq $null) {
-    Import-Module posh-util -ErrorAction SilentlyContinue
-    $poshUtilModule = Get-Module posh-util
-    if($poshUtilModule -eq $null) {
+  $poshGitModule= Get-Module posh-git
+  if($poshGitModule -eq $null) {
+    Import-Module posh-git -ErrorAction SilentlyContinue
+    $poshGitModule = Get-Module posh-git
+    if($poshGitModule -eq $null) {
       $pr = "`n" + [Environment]::UserName + "@" + [Environment]::MachineName + " "
       $pr = $pr + $pwd.ProviderPath
       return $pr + "`n$> "

@@ -1,5 +1,3 @@
-$profilepath = Split-Path $PROFILE -parent
-
 function Update-Profile(){
 <#
 .SYNOPSIS 
@@ -59,38 +57,39 @@ function Update-Profile(){
 }
 
 function Restore-Profile {
-    @(
-        $Profile.AllUsersAllHosts,
-        $Profile.AllUsersCurrentHost,
-        $Profile.CurrentUserAllHosts,
-        $Profile.CurrentUserCurrentHost
-    ) | % {
-        if(Test-Path $_){
-            Write-Verbose "Running $_"
-            . $_
-        }
-    }    
+<#
+.SYNOPSIS 
+    An utility function for re-run all the $PROFILEs in the current session.
+.EXAMPLE
+  Restore-Profile
+#>
+  @(
+    $Profile.AllUsersAllHosts,
+    $Profile.AllUsersCurrentHost,
+    $Profile.CurrentUserAllHosts,
+    $Profile.CurrentUserCurrentHost
+  ) | % {
+    if(Test-Path $_){
+      Write-Verbose "Running $_"
+      . $_
+    }
+  } 
 }
 
 function Restore-AllModules {
-  Get-Module | ?{ 
+<#
+.SYNOPSIS 
+    An utility function for re-importing all the module loaded in the current session.
+.EXAMPLE
+  Restore-AllModules
+#>
+  Get-Module | ?{
     $_.ModuleBase.StartsWith($profilepath) 
   } | %{
     Remove-Module $_
     Import-Module $_.Name
   }
 
-  # Remove-Variable VcsPromptStatuses
   Restore-Profile
 }
-
-Set-Alias rc                  Restore-AllModules
-Set-Alias rstcon              Restore-AllModules
-
-Export-ModuleMember -Function Restore-AllModules
-Export-ModuleMember -Function Restore-Profile
-Export-ModuleMember -Function Update-Profile
-Export-ModuleMember -Alias    rc
-Export-ModuleMember -Alias    rstcon
-Export-ModuleMember -Variable profilepath
 

@@ -79,11 +79,12 @@ colo ron
 "hi String ctermfg=cyan
 
 " au FileType cs set omnifunc=syntaxcomplete#Complete
-au FileType cs set foldmethod=marker 
-au FileType cs set foldmarker={,} 
-au FileType cs set foldtext=substitute(getline(v:foldstart),'{.*','{...}',) 
-au FileType cs set foldlevelstart=5
-au FileType sc set foldlevel=1
+au FileType cs,ps1,psm1 set foldmethod=marker 
+au FileType cs,ps1,psm1 set foldmarker={,} 
+au FileType cs,ps1,psm1 set foldtext=substitute(getline(v:foldstart),'{.*','{...}',) 
+au FileType cs,ps1,psm1 set foldlevelstart=5
+au FileType cs,ps1,psm1 set foldlevel=4
+
 
 set virtualedit=onemore
 set shiftwidth=2

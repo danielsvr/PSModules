@@ -1,6 +1,5 @@
 ﻿Import-Module posh-util
 Import-Module vcs-commands
-Import-Module ProfileUtil
 
 Update-Profile
 Register-PoshGit
