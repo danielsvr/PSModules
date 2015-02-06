@@ -14,6 +14,16 @@ function Global:prompt {
   return $vcsStatus  
 }
 
+function Edit-Hosts {
+   Start-AsAdmin powershell -Command { `
+    Set-ItemProperty "${env:SystemRoot}\System32\drivers\etc\hosts" IsReadOnly $false;`
+    vim "${env:SystemRoot}\System32\drivers\etc\hosts";`
+    Set-ItemProperty "${env:SystemRoot}\System32\drivers\etc\hosts" IsReadOnly $true;`
+  }
+}
+
+
+
 # function to help binding exit keyword to an alias
 function ex{exit}
 
