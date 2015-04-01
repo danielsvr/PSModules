@@ -1,4 +1,10 @@
-﻿Import-Module posh-util
+﻿$PSM = (Split-Path $PROFILE -Parent)
+$PSM = "$PSM\Modules"
+if (-not ($env:PSModulePath -like "*$PSM*")) {
+  $env:PSModulePath = "$($env:PSModulePath);$PSM"
+}
+
+Import-Module posh-util
 Import-Module vcs-commands
 
 Update-Profile
