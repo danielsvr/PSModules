@@ -118,9 +118,9 @@ IF EXIST %USERPROFILE%\runcom.cmd (
 @'
 @echo off
 
-doskey ls=dir $*
-doskey :q=exit
-doskey clear=cls
+REM doskey ls=dir $*
+REM doskey :q=exit
+REM doskey clear=cls
 
 '@ | Out-File $env:USERPROFILE\runcom.cmd -Encoding ASCII
 
