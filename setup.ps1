@@ -15,6 +15,26 @@
 
 $profilepath = Split-Path $PROFILE -parent
 
+function Extract-Zip {
+param(
+  [string] $zipfilename, 
+  [string] $destination
+)
+    
+$zipfilename = (Get-Item $zipfilename).FullName
+$destination = (Get-Item $destination).FullName
+
+if(test-path($zipfilename)) { 
+  $shellApplication = new-object -com shell.application
+  $zipPackage = $shellApplication.NameSpace($zipfilename)
+  $destinationFolder = $shellApplication.NameSpace($destination)
+  $items = $zipPackage.Items()
+  $destinationFolder.CopyHere($items)
+  return
+}
+Write-Host "Can't extract $zipfilename"
+}
+
 Function DownloadZippedProfile {
     # temporary redirect
     # $profilepath = ("{0}_tmp" -f $profilepath)
@@ -44,8 +64,9 @@ Function DownloadZippedProfile {
 
 
     Remove-Item -Recurse -Force $tempProfileUnzip -ErrorAction SilentlyContinue
-    [System.IO.Compression.ZipFile]::`
-      ExtractToDirectory($tempProfileZip, $tempProfileUnzip)
+    Extract-Zip -zipfilename $tempProfileZip -destination $tempProfileUnzip
+#    [System.IO.Compression.ZipFile]::`
+#      ExtractToDirectory($tempProfileZip, $tempProfileUnzip)
     Write-Host "Done"
 
     Write-Host "Moving unziped content to $profilepath"
