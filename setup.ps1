@@ -22,6 +22,9 @@ param(
 )
     
 $zipfilename = (Get-Item $zipfilename).FullName
+if(-not (Test-Path $destination)) {
+  mkdir $destination
+}
 $destination = (Get-Item $destination).FullName
 
 if(test-path($zipfilename)) { 
