@@ -36,22 +36,23 @@ function ex{exit}
 #######################################################################################
 ##################### Variables #######################################################
 #######################################################################################
-$notepad  = "C:\Program Files (x86)\Notepad++\notepad++.exe"
+$notepad    = "C:\Program Files (x86)\Notepad++\notepad++.exe"
 
-$devenv10 = "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe"
-$devenv11 = "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe"
-$devenv12 = "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.exe"
-$devenv   = $devenv12
+$devenv10   = "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe"
+$devenv11   = "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe"
+$devenv12   = "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.exe"
+$devenv     = $devenv12
 
-$mstest11 = "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\mstest.exe"
-$mstest12 = "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\mstest.exe"
-$mstest   = $mstest12
+$mstest11   = "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\mstest.exe"
+$mstest12   = "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\mstest.exe"
+$mstest     = $mstest12
 
-$msbuild4 = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe"
-$msbuild  = $msbuild4
+$msbuild3_5 = "C:\Windows\Microsoft.NET\Framework64\v3.5\MSBuild.exe"
+$msbuild4   = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe"
+$msbuild    = $msbuild4
 
-$procex   = "C:\Chocolatey\lib\procexp.15.13\tools\procexp.exe"
-$hosts    = "C:\Windows\System32\drivers\etc\hosts"
+$procex     = "C:\Chocolatey\lib\procexp.15.13\tools\procexp.exe"
+$hosts      = "C:\Windows\System32\drivers\etc\hosts"
 
 #######################################################################################
 ##################### Aliasses ########################################################
