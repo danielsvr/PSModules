@@ -68,6 +68,170 @@ param(
   mstsc /v:$machine
 }
 
+function Connect-Firewall {
+<#
+.SYNOPSIS 
+    A utility function for login into a cisco based firewall
+.EXAMPLE
+    Connect-Firewall -username usr -password psd -url https://192.168.1.1/netaccess/loginuser.html
+.PARAMETER username
+    The username
+.PARAMETER password
+    The password
+.PARAMETER url
+    The url of the firewall
+#>
+
+# this seems to be important when you need the common parametes to work with your modules
+[CmdletBinding()]
+param(
+[string]$url,
+[string]$username,
+[string]$password,
+[switch]$persist
+)
+
+$shouldPersist = $persist.IsPresent
+$stored = Get-FirewallPersistedOptions  
+if(-not $url) {
+$url = $stored.url
+$shouldPersist = $false
+}
+if(-not $username) {
+$username = $stored.username
+$shouldPersist =$false
+}
+if(-not $password) {
+$password = $stored.password
+$shouldPersist = $false
+}
+if(-not $url) {
+$nourlerror = New-Object `
+    'System.ArgumentException' `
+    -ArgumentList 'Url not provided'
+throw $nourlerror
+}
+if(-not $username) {
+$nousererror = New-Object `
+    'System.ArgumentException' `
+    -ArgumentList 'Username not provided'
+throw $nousererror
+}
+if(-not $password) {
+$nopassworderror = New-Object `
+    'System.ArgumentException' `
+    -ArgumentList 'Password not provided'
+throw $nopassworderror
+}
+
+if($persist) {
+  Set-FirewallOptions -url $url -username $username -password $password
+}
+
+$oldCallback = [System.Net.ServicePointManager]::ServerCertificateValidationCallback
+try {
+  [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+  $wc = New-Object System.Net.WebClient
+  Write-Verbose "Downloading $url ..."
+  $wc.DownloadString($url) | Out-Null
+
+  $param = New-Object System.Collections.Specialized.NameValueCollection
+  $param.Add("username", $username)
+  $param.Add("password", $password)
+  $param.Add("sid", "0")
+
+  Write-Verbose "Posting to $url ..."
+  $rsp = $wc.UploadValues($url, "POST", $param)
+  $rsp = (New-Object System.Text.UTF8Encoding).GetString($rsp)
+  Write-Verbose $rsp
+  if($rsp.Contains("Authentication Error")) {
+    $loginerror = New-Object `
+    'System.Exception' `
+    -ArgumentList 'Cannot log in.'
+    throw $loginerror
+  }
+} finally {
+ [System.Net.ServicePointManager]::ServerCertificateValidationCallback = $oldCallback
+}
+}
+
+function Get-FirewallPersistedOptions {
+$file = ".frw"
+$frw ="$profilepath\.data\$file"
+$none =  @{ "url"=$null; "username"=$null; "password"=$null };
+
+if(-not (Test-Path $frw)) {
+  $frw = "$($env:USERPROFILE)\$file" 
+}
+
+if(-not (Test-Path $frw)) {
+  Write-Verbose "W: $file is not present in the user profile"
+  return $none
+}
+
+if (!(Get-Command Get-IniContent -TotalCount 1 -ErrorAction SilentlyContinue)) {
+  Write-Verbose "W: Get-IniContent not found. Data persitance will not be available"
+  return $none
+}
+
+$content = Get-IniContent $frw
+$password = ConvertTo-SecureString $content["firewall"]["password"]
+if(-not ($content["firewall"]["password"] -eq $null)) {
+  $pass = $([System.Runtime.InteropServices.Marshal]::PtrToStringAuto(`
+      [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($password)))
+}
+
+return @{ "url"=$content["firewall"]["url"]; "username"=$content["firewall"]["username"]; "password"=$content["firewall"]["password"] };
+}
+
+function Set-FirewallOptions {
+param(
+[string]$url,
+[string]$username,
+[string]$password
+)
+
+if (!((Get-Command Out-IniFile -TotalCount 1 -ErrorAction SilentlyContinue) `
+    -and (Get-Command Get-IniContent -TotalCount 1 -ErrorAction SilentlyContinue))) {
+  Write-Verbose "W: Out-IniFile or Get-IniContent not found. Data persistance will not be available"
+  return
+}
+
+$file = ".frw"
+$dataDirectory = "$profilepath\.data"
+$dataDirectoryExists = Test-Path $dataDirectory
+  
+if(-not $dataDirectoryExists) {    
+  Write-Verbose "I: '$dataDirectory' does not exists"
+  md $dataDirectory
+}
+
+$filepath = "$dataDirectory\$file"
+$fileExists = Test-Path $filepath
+
+if(-not $fileExists) {    
+  Write-Verbose "I: '$filepath' does not exists"
+@"
+[firewall]
+
+"@ | Out-File $filepath -Encoding ASCII
+  }
+
+$content = Get-IniContent $filepath
+if(-not([string]::IsNullOrEmpty($url))) {
+  $content["firewall"]["url"] = $url
+}
+if(-not([string]::IsNullOrEmpty($username))) {
+  $content["firewall"]["username"] = $username
+}
+if(-not([string]::IsNullOrEmpty($password))) {
+  $content["firewall"]["password"] = ConvertTo-SecureString $password -AsPlainText -Force | ConvertFrom-SecureString
+}
+rm $filepath -Force -ErrorAction SilentlyContinue
+if(-not (Test-Path $filepath)) {
+  Out-IniFile -InputObject $content -File $filepath -Encoding ASCII
+}
+}
 function Assert-Mstsc {
   $mstsc = $null
   ($mstsc = Get-Command mstsc -ErrorAction Continue) | Out-Null
@@ -265,7 +429,11 @@ param (
 
 
 Set-Alias rdc Connect-RemoteDesktop
+Set-Alias logf Connect-RemoteDesktop
 
 Export-ModuleMember -Function Connect-RemoteDesktop
+Export-ModuleMember -Function Connect-Firewall
+Export-ModuleMember -Function Set-FirewallOptions
 Export-ModuleMember -Alias rdc
+Export-ModuleMember -Alias logf
 

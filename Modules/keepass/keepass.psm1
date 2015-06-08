@@ -20,10 +20,10 @@ if($NoProfile.IsPresent) {
   return
 }
 
-$kpass ="$($env:USERPROFILE)\.kpass" 
+$kpass = "$profilepath\.data\.kpass"
 
 if(-not (Test-Path $kpass)) {
-  $kpass = "$profilepath\.kpass"
+  $kpass ="$($env:USERPROFILE)\.kpass"
 }
 
 if(-not (Test-Path $kpass)) {
@@ -78,7 +78,7 @@ start "$($keepass.Path)" -ArgumentList ($db, "-pw:$pw")
 Function Set-KeePass {
 param(
 [string]$password,
-[string]$Path = "$($env:USERPROFILE)\.kpass" 
+[string]$Path = "$profilepath\.data\.kpass" 
 )
 
 ConvertTo-SecureString $password -AsPlainText -Force | ConvertFrom-SecureString | Out-File $Path

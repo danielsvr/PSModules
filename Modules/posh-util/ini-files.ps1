@@ -85,7 +85,7 @@ Function Out-IniFile
         [string]$Encoding = "Unicode", 
          
         [ValidateNotNullOrEmpty()] 
-        [ValidatePattern('^([a-zA-Z]\:)?.+\.ini$')] 
+        # [ValidatePattern('^([a-zA-Z]\:)?.+\.ini$')] 
         [Parameter(Mandatory=$True)] 
         [string]$FilePath, 
          
@@ -192,7 +192,7 @@ Function Get-IniContent
     [CmdletBinding()] 
     Param( 
         [ValidateNotNullOrEmpty()] 
-        [ValidateScript({(Test-Path $_) -and ((Get-Item $_).Extension -eq ".ini")})] 
+        [ValidateScript({(Test-Path $_)})] # -and ((Get-Item $_).Extension -eq ".ini") 
         [Parameter(ValueFromPipeline=$True,Mandatory=$True)] 
         [string]$FilePath 
     ) 
