@@ -124,7 +124,13 @@ $nopassworderror = New-Object `
 throw $nopassworderror
 }
 
+Write-Verbose "Should persist parameters? $persist"
 if($persist) {
+  Write-Verbose "Persisting parameters"
+  Write-Verbose "url: $url"
+  Write-Verbose "username: $username"
+  #Write-Verbose "password: $password"
+  
   Set-FirewallOptions -url $url -username $username -password $password
 }
 
@@ -141,6 +147,10 @@ try {
   $param.Add("sid", "0")
 
   Write-Verbose "Posting to $url ..."
+  Write-Verbose "Parameters: "
+  Write-Verbose "username: $username"
+  #Write-Verbose "password: $password"
+
   $rsp = $wc.UploadValues($url, "POST", $param)
   $rsp = (New-Object System.Text.UTF8Encoding).GetString($rsp)
   Write-Verbose $rsp
@@ -160,28 +170,36 @@ $file = ".frw"
 $frw ="$profilepath\.data\$file"
 $none =  @{ "url"=$null; "username"=$null; "password"=$null };
 
+Write-Verbose "Check if $frw exists"
 if(-not (Test-Path $frw)) {
+  Write-Verbose "$frw does not exist"
   $frw = "$($env:USERPROFILE)\$file" 
+  Write-Verbose "Check if $frw exists"
+  if(-not (Test-Path $frw)) {
+    Write-Verbose "$frw does not exist"
+    Write-Verbose "W: $file is not present in the user profile"
+    return $none
+  }
 }
 
-if(-not (Test-Path $frw)) {
-  Write-Verbose "W: $file is not present in the user profile"
-  return $none
-}
-
+Write-Verbose "Check the Get-IniContent command"
 if (!(Get-Command Get-IniContent -TotalCount 1 -ErrorAction SilentlyContinue)) {
   Write-Verbose "W: Get-IniContent not found. Data persitance will not be available"
   return $none
 }
 
 $content = Get-IniContent $frw
+Write-Verbose "`$content[`"firewall`"][`"url`"]: $($content['firewall']['url'])"
+Write-Verbose "`$content[`"firewall`"][`"username`"]: $($content['firewall']['username'])"
+Write-Verbose "`$content[`"firewall`"][`"password`"]: $($content['firewall']['password'])"
+  
 $password = ConvertTo-SecureString $content["firewall"]["password"]
 if(-not ($content["firewall"]["password"] -eq $null)) {
-  $pass = $([System.Runtime.InteropServices.Marshal]::PtrToStringAuto(`
+  $password = $([System.Runtime.InteropServices.Marshal]::PtrToStringAuto(`
       [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($password)))
 }
 
-return @{ "url"=$content["firewall"]["url"]; "username"=$content["firewall"]["username"]; "password"=$content["firewall"]["password"] };
+return @{ "url"=$content["firewall"]["url"]; "username"=$content["firewall"]["username"]; "password"=$password };
 }
 
 function Set-FirewallOptions {
