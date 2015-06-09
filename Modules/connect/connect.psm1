@@ -447,7 +447,7 @@ param (
 
 
 Set-Alias rdc Connect-RemoteDesktop
-Set-Alias logf Connect-RemoteDesktop
+Set-Alias logf Connect-Firewall
 
 Export-ModuleMember -Function Connect-RemoteDesktop
 Export-ModuleMember -Function Connect-Firewall
