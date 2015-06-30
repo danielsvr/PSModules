@@ -28,9 +28,15 @@ function Edit-Hosts {
   }
 }
 
-
-
 # function to help binding exit keyword to an alias
+function vs10cmd {
+  & $env:comspec /k '"C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat"' x86
+}
+
+function vs12cmd {
+  & $env:comspec /k '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\Tools\VsDevCmd.bat"'
+}
+
 function ex{exit}
 
 #######################################################################################
