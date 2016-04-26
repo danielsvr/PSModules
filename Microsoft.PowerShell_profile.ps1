@@ -69,7 +69,7 @@ Set-Alias devenv10 "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\
 Set-Alias devenv11 "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe"
 Set-Alias msbuild  "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe"
 Set-Alias mstest   "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\mstest.exe"
-Set-Alias procex   "C:\Chocolatey\lib\procexp.15.13\tools\procexp.exe"
+Set-Alias procex   "C:\ProgramData\chocolatey\bin\procexp.exe"
 Set-Alias remote   "mstsc"
 Set-Alias :q       ex
 Set-Alias ^Q       ex
