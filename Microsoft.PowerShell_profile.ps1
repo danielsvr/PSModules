@@ -75,3 +75,9 @@ Set-Alias :q       ex
 Set-Alias ^Q       ex
 Set-Alias l        ls
 
+
+# Chocolatey profile
+$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+if (Test-Path($ChocolateyProfile)) {
+  Import-Module "$ChocolateyProfile"
+}
