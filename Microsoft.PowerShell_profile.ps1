@@ -15,20 +15,11 @@ function Global:prompt {
   # try {
   $vcsStatus = Get-VcsStatus
   # } catch {
-  #   "$error" 
+  #   "$error"
   # }
-  return $vcsStatus  
+  return $vcsStatus
 }
 
-function Edit-Hosts {
-   Start-AsAdmin powershell -Command { `
-    Set-ItemProperty "${env:SystemRoot}\System32\drivers\etc\hosts" IsReadOnly $false;`
-    vim "${env:SystemRoot}\System32\drivers\etc\hosts";`
-    Set-ItemProperty "${env:SystemRoot}\System32\drivers\etc\hosts" IsReadOnly $true;`
-  }
-}
-
-# function to help binding exit keyword to an alias
 function vs10cmd {
   & $env:comspec /k '"C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat"' x86
 }
@@ -37,6 +28,7 @@ function vs12cmd {
   & $env:comspec /k '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\Tools\VsDevCmd.bat"'
 }
 
+# function to help binding exit keyword to an alias
 function ex{exit}
 
 #######################################################################################

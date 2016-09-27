@@ -223,10 +223,67 @@ param(
     }
 }
 
+function Edit-Hosts {
+   Start-AsAdmin powershell -Command { `
+    Set-ItemProperty "${env:SystemRoot}\System32\drivers\etc\hosts" IsReadOnly $false;`
+    vim "${env:SystemRoot}\System32\drivers\etc\hosts";`
+    Set-ItemProperty "${env:SystemRoot}\System32\drivers\etc\hosts" IsReadOnly $true;`
+  }
+}
+
+Add-Type -TypeDefinition @"
+   public enum FileEncodingType
+   {
+      ascii,
+      utf8,
+      unicode
+   }
+"@
+
+function Convert-FileEncoding {
+param (
+    [Parameter(Mandatory=$true,
+               ValueFromPipeline=$true)]
+    [string]$FileName,
+    [Parameter(Mandatory=$false)]
+    [FileEncodingType]$Encoding=[FileEncodingType]::ASCII,
+    [Parameter(Mandatory=$false)]
+    [switch]$NoBackup=$false
+)
+process {
+        if(-not (Test-Path $FileName)) {
+            Write-Error "File does not exist"
+            return
+        }   
+
+        if($FileName.Contains(".bck")) {
+            Write-Debug "File $FileName is a backup file. SKIP"
+            return
+        }
+
+        $Destination = $FileName
+        Copy-Item -Path $FileName -Destination "$($FileName).bck"
+        $FileName = "$($FileName).bck"
+
+        Write-Debug "Copied $Destination to $FileName`nChanging Encoding to $Encoding"
+
+        Get-Content $FileName | Out-File -FilePath $Destination -Encoding $Encoding
+
+        if($NoBackup.IsPresent) {
+            Write-Debug "NoBackup parameter is set. Backup file not kept"
+            Remove-Item -Force $FileName
+            Write-Debug "Backup file $FileName is removed."
+        }
+    }
+}
 
 Set-Alias newssc New-SelfSigned-Certificate
+Set-Alias changefiletype Convert-FileEncoding
 
+Export-ModuleMember -Function Edit-Hosts
+Export-ModuleMember -Function Convert-FileEncoding
 Export-ModuleMember -Function Set-AppCompatFlag
 Export-ModuleMember -Function New-SelfSigned-Certificate
 
 Export-ModuleMember -Alias newssc
+Export-ModuleMember -Alias changefiletype
