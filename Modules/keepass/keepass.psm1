@@ -35,6 +35,9 @@ $securePw =(Get-Content -Path $kpass | ConvertTo-SecureString);
 $pw = $([System.Runtime.InteropServices.Marshal]::PtrToStringAuto(`
     [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($securePw)))
 
+# $([System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR(Get-Content -Path $kpass | ConvertTo-SecureString)))
+# IMPORTANT.... password may be is broken if you use $ sign. Use '<pass>' format
+
 if($env:KEEPASSDEFAULTDB -eq $null) {
   Write-Warning "Failed to auto-detect db."
   Write-Verbose "Environment vartiable KEEPASSDEFAULTDB is not set."
