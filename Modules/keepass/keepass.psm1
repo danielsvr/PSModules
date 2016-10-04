@@ -43,8 +43,10 @@ if($env:KEEPASSDEFAULTDB -eq $null) {
   return
 }
 
-if(Test-Path $env:USERONEDRIVE) {
-  $db = "$($env:USERONEDRIVE)\$($env:KEEPASSDEFAULTDB)"
+if(-not ($env:USERONEDRIVE -eq $null)) {
+  if(Test-Path $env:USERONEDRIVE) {
+    $db = "$($env:USERONEDRIVE)\$($env:KEEPASSDEFAULTDB)"
+  }
 }
 
 if(-not (Test-Path $db)) {
@@ -55,6 +57,11 @@ if(-not (Test-Path $db)) {
 if(-not (Test-Path $db)) {
   Write-Verbose """$db"" not found."
   $db = "$($env:USERPROFILE)\SkyDrive\$($env:KEEPASSDEFAULTDB)"
+}
+
+if(-not (Test-Path $db)) {
+  Write-Verbose """$db"" not found."
+  $db = "$($env:USERPROFILE)\$($env:KEEPASSDEFAULTDB)"
 }
 
 if(-not (Test-Path $db)) {
