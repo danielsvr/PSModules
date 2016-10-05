@@ -1,4 +1,11 @@
-﻿$PSM = (Split-Path $PROFILE -Parent)
+﻿if(-not ("$($env:HOMEDRIVE)$($env:HOMEPATH)" -eq "$($env:USERPROFILE)")) {
+  $env:HOMEDRIVE = "$($(Get-Item $($env:USERPROFILE)).PSDrive.Name):"
+  $env:HOMEPATH = $($env:USERPROFILE).Substring(2)
+}
+
+(get-psprovider 'FileSystem').Home = $env:USERPROFILE
+
+$PSM = (Split-Path $PROFILE -Parent)
 $PSM = "$PSM\Modules"
 if (-not ($env:PSModulePath -like "*$PSM*")) {
   $env:PSModulePath = "$($env:PSModulePath);$PSM"
