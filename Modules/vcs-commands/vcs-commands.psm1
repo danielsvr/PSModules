@@ -202,7 +202,7 @@ function Get-VcsStatus {
     Import-Module posh-git -ErrorAction SilentlyContinue
     $poshGitModule = Get-Module posh-git
     if($poshGitModule -eq $null) {
-      $pr = "`n" + [Environment]::UserName + "@" + [Environment]::MachineName + " "
+      $pr = "`n$(Get-Date)`n"+ [Environment]::UserName + "@" + [Environment]::MachineName + " "
       $pr = $pr + $pwd.ProviderPath
       return $pr + "`n$> "
     }    
