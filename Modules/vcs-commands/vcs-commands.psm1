@@ -202,7 +202,8 @@ function Get-VcsStatus {
     Import-Module posh-git -ErrorAction SilentlyContinue
     $poshGitModule = Get-Module posh-git
     if($poshGitModule -eq $null) {
-      $pr = "`n$(Get-Date)`n"+ [Environment]::UserName + "@" + [Environment]::MachineName + " "
+      $pr = "`n$(Get-Date)"
+      $pr = "`n"+ [Environment]::UserName + "@" + [Environment]::MachineName + " "
       $pr = $pr + $pwd.ProviderPath
       return $pr + "`n$> "
     }    
@@ -213,6 +214,7 @@ function Get-VcsStatus {
     $Host.UI.RawUI.ForegroundColor = $GitPromptSettings.DefaultForegroundColor
 
     Write-Host " "
+    Write-Host "$(Get-Date)"
     Write-Host([Environment]::UserName + `
               "@" + [Environment]::MachineName + " ") `
               -nonewline -foregroundcolor "DarkGreen"
