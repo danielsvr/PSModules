@@ -59,20 +59,25 @@ $msbuild    = $msbuild4
 $procex     = "C:\Chocolatey\lib\procexp.15.13\tools\procexp.exe"
 $hosts      = "C:\Windows\System32\drivers\etc\hosts"
 
+$vboxmanage = "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe"
+$vbox       = $vboxmanage
+
 #######################################################################################
 ##################### Aliasses ########################################################
 #######################################################################################
-Set-Alias notepad  "C:\Program Files (x86)\Notepad++\notepad++.exe"
-Set-Alias devenv   "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe"
-Set-Alias devenv10 "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe"
-Set-Alias devenv11 "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe"
-Set-Alias msbuild  "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe"
-Set-Alias mstest   "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\mstest.exe"
-Set-Alias procex   "C:\ProgramData\chocolatey\bin\procexp.exe"
-Set-Alias remote   "mstsc"
-Set-Alias :q       ex
-Set-Alias ^Q       ex
-Set-Alias l        ls
+Set-Alias notepad     "C:\Program Files (x86)\Notepad++\notepad++.exe"
+Set-Alias devenv      "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe"
+Set-Alias devenv10    "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\devenv.exe"
+Set-Alias devenv11    "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe"
+Set-Alias msbuild     "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe"
+Set-Alias mstest      "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\mstest.exe"
+Set-Alias procex      "C:\ProgramData\chocolatey\bin\procexp.exe"
+Set-Alias remote      "mstsc"
+Set-Alias vbox        "$vboxmanage"
+Set-Alias vboxmanage  "$vboxmanage"
+Set-Alias :q          ex
+Set-Alias ^Q          ex
+Set-Alias l           ls
 
 
 # Chocolatey profile

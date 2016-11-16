@@ -1,0 +1,30 @@
+// Place your settings in this file to overwrite the default settings
+{
+  "explorer.autoReveal": false,
+
+  "editor.renderWhitespace": "all",
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.autoClosingBrackets": false,
+
+  "workbench.editor.enablePreview": false,
+
+  "files.autoSave": "onFocusChange",
+  "files.associations": {
+      "Vagrantfile": "ruby",
+      "*.props":"xml"
+  },
+  
+   
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/bin": true,
+    "**/obj": true,
+    "**/.DS_Store": true,
+    "**/*.Designer.*": true
+  }
+
+}
