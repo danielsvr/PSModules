@@ -27,4 +27,6 @@
     "**/*.Designer.*": true
   }
 
+,
+"window.zoomLevel": 0
 }

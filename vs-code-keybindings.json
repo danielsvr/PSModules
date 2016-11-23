@@ -1,29 +1,30 @@
 // Place your settings in this file to overwrite the default settings
-{
-  "explorer.autoReveal": false,
+[
+  // DISABLED KEYS
+  { "key": "ctrl+m",                  "command": "-editor.action.toggleTabFocusMode" },
+  { "key": "shift+alt+up",            "command": "-editor.action.copyLinesUpAction" },
+  { "key": "ctrl+shift+alt+down",     "command": "-cursorColumnSelectDown" },
+  { "key": "ctrl+shift+alt+left",     "command": "-cursorColumnSelectLeft" },
+  { "key": "ctrl+shift+alt+pageup",   "command": "-cursorColumnSelectPageUp" },
+  { "key": "ctrl+shift+alt+right",    "command": "-cursorColumnSelectRight" },
+  { "key": "ctrl+shift+alt+up",       "command": "-cursorColumnSelectUp" },
 
-  "editor.renderWhitespace": "all",
-  "editor.tabSize": 2,
-  "editor.insertSpaces": true,
-  "editor.detectIndentation": false,
-  "editor.autoClosingBrackets": false,
-
-  "workbench.editor.enablePreview": false,
-
-  "files.autoSave": "onFocusChange",
-  "files.associations": {
-      "Vagrantfile": "ruby",
-      "*.props":"xml"
-  },
-   
-  "files.exclude": {
-    "**/.git": true,
-    "**/.svn": true,
-    "**/.hg": true,
-    "**/bin": true,
-    "**/obj": true,
-    "**/.DS_Store": true,
-    "**/*.Designer.*": true
-  }
-
-}
+  // CUSTOM KEYS
+  { "key": "ctrl+d",                  "command": "editor.action.copyLinesDownAction",
+                                         "when": "editorTextFocus && !editorReadonly" },
+  { "key": "shift+alt+right",         "command": "cursorColumnSelectRight",
+                                         "when": "editorTextFocus" },
+  { "key": "shift+alt+up",            "command": "cursorColumnSelectUp",
+                                         "when": "editorTextFocus" },
+  { "key": "shift+alt+down",          "command": "cursorColumnSelectDown",
+                                         "when": "editorTextFocus" },
+  { "key": "shift+alt+left",          "command": "cursorColumnSelectLeft",
+                                         "when": "editorTextFocus" },
+  { "key": "ctrl+m ctrl+l",           "command": "editor.foldAll",
+                                         "when": "editorTextFocus" },
+  { "key": "ctrl+m ctrl+o",           "command": "editor.unfoldAll",
+                                         "when": "editorTextFocus" },
+  { "key": "ctrl+m ctrl+m",           "command": "editor.foldRecursively",
+                                         "when": "editorTextFocus" },
+  { "key": "ctrl+0",                  "command": "workbench.action.zoomReset"}
+]
