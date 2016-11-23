@@ -16,6 +16,7 @@
       "*.props":"xml"
   },
   
+  "terminal.integrated.shell.windows": "powershell.exe",
    
   "files.exclude": {
     "**/.git": true,
