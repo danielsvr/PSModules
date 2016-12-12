@@ -78,6 +78,7 @@ Set-Alias vboxmanage  "$vboxmanage"
 Set-Alias :q          ex
 Set-Alias ^Q          ex
 Set-Alias l           ls
+Set-Alias git-sh      "C:\Program Files\Git\bin\sh.exe"
 
 
 # Chocolatey profile
