@@ -26,8 +26,15 @@
     "**/obj": true,
     "**/.DS_Store": true,
     "**/*.Designer.*": true
-  }
+  },
 
-,
-"window.zoomLevel": 0
+  "window.zoomLevel": 0,
+
+  "macros": {
+    "focusActiveFileInExplorer": [
+      "workbench.files.action.showActiveFileInExplorer",
+      "workbench.files.action.focusFilesExplorer"
+    ]
+  },
+  "extensions.ignoreRecommendations": false
 }

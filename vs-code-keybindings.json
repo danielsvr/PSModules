@@ -26,5 +26,9 @@
                                          "when": "editorTextFocus" },
   { "key": "ctrl+m ctrl+m",           "command": "editor.foldRecursively",
                                          "when": "editorTextFocus" },
-  { "key": "ctrl+0",                  "command": "workbench.action.zoomReset"}
+  { "key": "ctrl+0",                  "command": "workbench.action.zoomReset"},
+  { "key": "shift+alt+l",             "command":"macros.focusActiveFileInExplorer",
+                                        "when": "editorFocus"},
+  { "key": "alt+f4",                  "command": "workbench.action.closeActiveEditor"},
+  { "key": "ctrl+w",                  "command": "-workbench.action.closeWindow"}
 ]

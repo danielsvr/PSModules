@@ -62,6 +62,9 @@ $hosts      = "C:\Windows\System32\drivers\etc\hosts"
 $vboxmanage = "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe"
 $vbox       = $vboxmanage
 
+$sources    = "E:\Users\daniel.severin\sources"
+$E          = "E:\Users\daniel.severin"
+
 #######################################################################################
 ##################### Aliasses ########################################################
 #######################################################################################
@@ -87,4 +90,4 @@ if (Test-Path($ChocolateyProfile)) {
   Import-Module "$ChocolateyProfile"
 }
 
-Set-ExecutionPolicy RemoteSigned  -Scope Process -Confirm:$false
+#Set-ExecutionPolicy RemoteSigned  -Scope Process -Confirm:$false
