@@ -1,4 +1,4 @@
-function Set-AppCompatFlag {
+function Set-AppCompatFlag {
 <#
        .SYNOPSIS
         Sets the Compatibility flags for an application.
@@ -161,6 +161,10 @@ param(
     [string]$MakecertPath = $null
 )
 
+	if((-not $MakecertPath) -or (-not (Test-Path $MakecertPath)))
+    {
+        $MakecertPath = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.17134.0\x64"
+    }
     if((-not $MakecertPath) -or (-not (Test-Path $MakecertPath)))
     {
         $MakecertPath = "C:\Program Files (x86)\Windows Kits\10\bin\x64\"
@@ -221,6 +225,107 @@ param(
 
         Write-Warning 'Please be advised, the pfx password is not the one set in the dialogs. It is the password set via $DevCertPassword parameter'
     }
+}
+
+function Export-NewSelfSignedCertificate(){
+param(
+    [string]$CertDomain = "localhost",
+    [string]$CertName = "DevCert",
+    [string]$RootCertName = 'DevRoot',
+    [string]$RootCertPassword = 'Dev123',
+    [string]$DevCertPassword = 'Dev123',
+    [string]$WPath = "$profilepath\.data\.certs"
+)
+
+$RootCertExists = $false;
+$InstalledRootCert = Get-ChildItem Cert:\LocalMachine\Root `
+	| Where-Object { $_.Subject.Contains($RootCertName) } `
+	| ForEach-Object { `
+	$RootCertExists = $true `
+};
+# Write-Host "RootCertExists: $RootCertExists"
+
+$RootCerFile = "$WPath\$RootCertName.cer";
+$RootPvkFile = "$WPath\$RootCertName.pvk";
+$RootPfxFile = "$WPath\$RootCertName.pfx";
+
+$DevCerFile = "$WPath\$CertDomain.cer";
+$DevPvkFile = "$WPath\$CertDomain.pvk";
+$DevPfxFile = "$WPath\$CertDomain.pfx";
+
+if(-not $RootCertExists) {
+
+	if(Test-Path $RootCerFile) {
+		Remove-Item $RootCerFile;
+	}
+	if(Test-Path $RootPvkFile) {
+		Remove-Item $RootPvkFile;
+	}
+	if(Test-Path $RootPfxFile) {
+		Remove-Item $RootPfxFile;
+	}
+
+	# Note: the current defaults for New-SelfSignedCertificate are 2048 bit RSA keys with SHA256 -- if they change them, it'll be to stronger options, so let's accept the defaults for now
+	$rootExtension = [System.Security.Cryptography.X509Certificates.X509BasicConstraintsExtension]::new($true, $true, 0, $true)
+	$root = New-SelfSignedCertificate `
+		-Extension $rootExtension `
+		-Subject "CN=$RootCertName" `
+		-DnsName "$RootCertName" `
+		-NotAfter (Get-Date).AddYears(2) `
+		-KeyUsage "CertSign" `
+		-CertStoreLocation "Cert:\LocalMachine\My" 
+		#-KeyExportPolicy "NonExportable" `
+	 
+	$cer = New-SelfSignedCertificate `
+		-Signer $root `
+		-Subject "CN=$CertName" `
+		-DnsName "$CertDomain" `
+		-NotAfter ((Get-Date).AddYears(1))
+
+	Move-Item "Cert:\LocalMachine\My\$($root.Thumbprint)" -Destination "Cert:\LocalMachine\Root"
+	
+	Export-Certificate -FilePath $RootCerFile -Cert "Cert:\LocalMachine\Root\$($root.Thumbprint)" `
+	 -Type CERT
+	 
+	Export-PfxCertificate -FilePath $RootPfxFile -Cert "Cert:\LocalMachine\Root\$($root.Thumbprint)" `
+	 -Password $(ConvertTo-SecureString -String "$RootCertPassword" -AsPlainText -Force)
+
+	 Export-Certificate -FilePath $DevCerFile -Cert "Cert:\LocalMachine\My\$($cer.Thumbprint)" `
+	 -Type CERT
+	 
+	Export-PfxCertificate -FilePath $DevPfxFile -Cert "Cert:\LocalMachine\My\$($cer.Thumbprint)" `
+	 -Password $(ConvertTo-SecureString -String "$DevCertPassword" -AsPlainText -Force)
+} else {
+
+	if(-not $root) {
+		$rootThumbprint = Get-ChildItem Cert:\LocalMachine\Root `
+			| Where-Object { $_.Subject.Contains($RootCertName) } `
+			| Foreach-Object { return $_.Thumbprint } `
+			| Select-Object -First 1
+
+		$root = Get-Item "Cert:\LocalMachine\Root\$rootThumbprint"
+
+		if(-not $root) {
+			Write-Error "No Root"
+		}
+	}
+
+	Move-Item "Cert:\LocalMachine\Root\$rootThumbprint" -Destination "Cert:\LocalMachine\My"
+
+	$cer = New-SelfSignedCertificate `
+		-Signer $root `
+		-Subject "CN=$CertName" `
+		-DnsName "$CertDomain" `
+		-NotAfter ((Get-Date).AddYears(1))
+
+	Export-Certificate -FilePath $DevCerFile -Cert "Cert:\LocalMachine\My\$($cer.Thumbprint)" `
+	 -Type CERT
+	 
+	Export-PfxCertificate -FilePath $DevPfxFile -Cert "Cert:\LocalMachine\My\$($cer.Thumbprint)" `
+	 -Password $(ConvertTo-SecureString -String "$DevCertPassword" -AsPlainText -Force)
+	 
+	Move-Item "Cert:\LocalMachine\My\$rootThumbprint" -Destination "Cert:\LocalMachine\Root"
+}
 }
 
 function Edit-Hosts {
@@ -284,6 +389,7 @@ Export-ModuleMember -Function Edit-Hosts
 Export-ModuleMember -Function Convert-FileEncoding
 Export-ModuleMember -Function Set-AppCompatFlag
 Export-ModuleMember -Function New-SelfSigned-Certificate
+Export-ModuleMember -Function Export-NewSelfSignedCertificate
 
 Export-ModuleMember -Alias newssc
 Export-ModuleMember -Alias changefiletype

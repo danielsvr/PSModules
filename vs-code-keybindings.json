@@ -30,5 +30,12 @@
   { "key": "shift+alt+l",             "command":"macros.focusActiveFileInExplorer",
                                         "when": "editorFocus"},
   { "key": "alt+f4",                  "command": "workbench.action.closeActiveEditor"},
-  { "key": "ctrl+w",                  "command": "-workbench.action.closeWindow"}
+  {
+    "key": "ctrl+w",
+    "command": "-workbench.action.closeWindow"
+  },
+  {
+    "key": "ctrl+w",
+    "command": "-editor.action.addSelectionToNextFindMatch"
+  }
 ]

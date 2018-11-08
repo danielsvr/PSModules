@@ -35,6 +35,15 @@ function vs12cmd {
   & $env:comspec /k '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\Tools\VsDevCmd.bat"'
 }
 
+function clean-build {
+param(
+	$slnfile
+)
+  git clean -xdf;
+  ./.nuget/NuGet.exe restore $slnfile;
+  &$msbuild $slnfile /t:clean /t:build;
+}
+
 # function to help binding exit keyword to an alias
 function ex{exit}
 
@@ -52,9 +61,12 @@ $mstest11   = "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\m
 $mstest12   = "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\mstest.exe"
 $mstest     = $mstest12
 
-$msbuild3_5 = "C:\Windows\Microsoft.NET\Framework64\v3.5\MSBuild.exe"
-$msbuild4   = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe"
-$msbuild    = $msbuild4
+
+$msbuild3_5 	= "C:\Windows\Microsoft.NET\Framework64\v3.5\MSBuild.exe"
+$msbuild4   	= "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe"
+$msbuild15_4_8  = "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\Bin\MSBuild.exe"
+$msbuild15      = $msbuild15_4_8
+$msbuild    	= $msbuild15
 
 $procex     = "C:\Chocolatey\lib\procexp.15.13\tools\procexp.exe"
 $hosts      = "C:\Windows\System32\drivers\etc\hosts"
