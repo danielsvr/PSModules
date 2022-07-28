@@ -1,4 +1,10 @@
-﻿if(-not ("$($env:HOMEDRIVE)$($env:HOMEPATH)" -eq "$($env:USERPROFILE)")) {
+﻿# Chocolatey profile
+$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+if (Test-Path($ChocolateyProfile)) {
+  Import-Module "$ChocolateyProfile"
+}
+
+if(-not ("$($env:HOMEDRIVE)$($env:HOMEPATH)" -eq "$($env:USERPROFILE)")) {
   $env:HOMEDRIVE = "$($(Get-Item $($env:USERPROFILE)).PSDrive.Name):"
   $env:HOMEPATH = $($env:USERPROFILE).Substring(2)
 }

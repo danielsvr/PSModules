@@ -6,7 +6,7 @@
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
   "editor.detectIndentation": false,
-  "editor.autoClosingBrackets": false,
+  "editor.autoClosingBrackets": "never",
 
   "workbench.editor.enablePreview": false,
 
@@ -29,8 +29,6 @@
     "**/*.Designer.*": true
   },
 
-  "window.zoomLevel": 0,
-
   "macros": {
     "focusActiveFileInExplorer": [
       "workbench.files.action.showActiveFileInExplorer",
@@ -42,5 +40,8 @@
   "git.enableSmartCommit": true,
   "git.confirmSync": false,
   "explorer.confirmDelete": false,
-  "explorer.confirmDragAndDrop": false
+  "explorer.confirmDragAndDrop": false,
+  "git.autofetch": true,
+  "editor.autoClosingQuotes": "never",
+  "editor.autoSurround": "never"
 }
